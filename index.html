@@ -1,64 +1,92 @@
 <!doctype html>
 <html>
 <head>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
     <meta name="viewport" content="initial-scale=1, user-scalable=no">
 </head>
 <body>
-<div class="">
-    <div class="">
-        <!-- only show this element when the isnt on mobile -->
-        <h1>Student Grade Table
-            <small>Grade Average : <span class="avgGrade"></span></small>
-        </h1>
-        <!-- only show this element when the user gets to a mobile version -->
-        <h3>Student Grade Table
-            <small>Grade Average : <span class="avgGrade"></span></small>
-        </h3>
-    </div>
-    <div class="student-add-form">
-        <h4>Add Student</h4>
-        <div>
-            <span>
-                <span class="glyphicon"></span>
-            </span>
-            <input type="text" class="" name="studentName" id="studentName" placeholder="Student Name">
-        </div>
-        <div class="">
-            <span class="">
-                <span class="glyphicon"></span>
-            </span>
-            <input type="text" class="" name="course" id="course"
-                   placeholder="Student Course">
-        </div>
-        <div class="">
-            <span class="">
-                <span class="glyphicon"></span>
-            </span>
-            <input type="text" class="" name="studentGrade" id="studentGrade"
-                   placeholder="Student Grade">
-        </div>
-        <button type="button" class="" onclick="">Add</button>
-        <button type="button" class="" onclick="">Cancel</button>
-    </div>
-    <div class="student-list-container">
-        <table class="student-list">
-            <thead>
-            <tr>
-                <th>Student Name</th>
-                <th>Student Course</th>
-                <th>Student Grade</th>
-                <th>Operations</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <div class="container-fluid">
+        <!-- Header & Grade Average -->
+        <div class="row">
+            <!-- only show this element when it isn't on mobile -->
+                <h1 class="col-xs-0 col-md-12">
+                    Student Grade Table
+                    <small>
+                        Grade Average :
+                        <span class="avgGrade label label-default"> </span>
+                    </small>
+                </h1>
+            <!-- only show this element when the user gets to a mobile version -->
+            <h3 class="col-xs-12 col-md-0">
+                Student Grade Table
+                <small>
+                    Grade Average :
+                    <span class="avgGrade label label-default"> </span>
+                </small>
+            </h3>
+        </div> <!-- end .row -->
+        <div class="row">
+            <!-- Add Student Data Form -->
+            <!-- Full on mobile, align right on desktop -->
+            <div role="form" class="student-add-form col-xs-12 col-md-3 col-md-push-9">
+                <h4>
+                    Add Student
+                </h4>
+
+                <!-- Name Input -->
+                <div class="input-group">
+                        <span class="input-group-addon ">
+                            <span class="glyphicon glyphicon-user"> </span>
+                        </span>
+                    <input type="text" class="form-control" name="studentName" id="studentName"
+                           placeholder="Student Name">
+                </div>
+                <!-- Course Input -->
+                <div class="input-group">
+                        <span class="input-group-addon ">
+                            <span class="glyphicon glyphicon-list-alt"> </span>
+                        </span>
+                    <input type="text" class="form-control" name="course" id="course" placeholder="Student Course">
+                </div>
+                <!-- Grade Input -->
+                <div class="input-group">
+                        <span class="input-group-addon ">
+                            <span class="glyphicon glyphicon-education"> </span>
+                        </span>
+                    <input type="text" class="form-control" name="studentGrade" id="studentGrade"
+                           placeholder="Student Grade">
+                </div>
+                <!-- Submit Buttons -->
+                <button type="button" class="btn btn-success" onclick="">
+                    Add
+                </button>
+                <button type="button" class="btn btn-default" onclick="">
+                    Cancel
+                </button>
+            </div>
+            <!-- end .student-add-form -->
+            <!-- View Student Data -->
+            <!-- Full on mobile, align left on desktop -->
+            <div class="student-list-container col-xs-12 col-md-9 col-md-pull-3">
+                <table class="student-list table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Student Course</th>
+                            <th>Student Grade</th>
+                            <th>Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div> <!-- end .student-list-container, .col-xs-12, .col-md-12, View Student Data -->
+        </div> <!-- end .row -->
+    </div> <!-- end .container-fluid -->
 </body>
 </html>
 
