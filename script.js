@@ -2,7 +2,7 @@
  * Define all global variables here
  */
 var student_array = [];
-var gradeSum = null; //hello
+var gradeSum = null;
 
 $(function(){
     /**
@@ -27,49 +27,39 @@ $(function(){
  */
 function addStudent() {
     //Check if input is empty or not a number
-    var check = $("#studentGrade").val();
-    if(isNaN(check) || check == ""){
+    var gradeCheck = $("#studentGrade").val();
+    if(isNaN(gradeCheck) || gradeCheck == ""){
         return;
     }
     //Get student data from input form
     var name = $("#studentName").val();
     var course = $("#course").val();
     //store grade as integer
-    var grade = parseInt($("#studentGrade").val());
+    var grade = parseInt(gradeCheck);
 
     //add grade to gradeSum
     gradeSum += grade;
 
-    //store data in object
-
+    //store input data in object
     var studentObject = {
         name: name,
         course: course,
         grade: grade
     };
 
-    console.log(studentObject);
-
+    //add studentObject to HTML table in DOM
     var $newRow = $('<tr>');
     var $rowName = $('<td>').text(studentObject.name);
     var $rowCourse = $('<td>').text(studentObject.course);
     var $rowGrade = $('<td>').text(studentObject.grade);
+    var $deleteButton = $('<td>').html('<button class="btn btn-danger">Delete</button>');
 
     $newRow.append($rowName);
     $newRow.append($rowCourse);
     $newRow.append($rowGrade);
+    $newRow.append($deleteButton);
 
     $('.student-list').append($newRow);
-
-
-
-
-
-
-
-
-    //add object to table
-    //addStudentToDom(StudentObject);
 
     //place object in student_array
     student_array.push(studentObject);
@@ -79,8 +69,7 @@ function addStudent() {
 
     //clear form
     clearAddStudentForm();
-};
-
+}//end addStudent function
 
 /**
  * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -89,7 +78,7 @@ function clearAddStudentForm() {
     $("#studentName").val("");
     $("#course").val("");
     $("#studentGrade").val("");
-};
+}
 
 /**
  * calculateAverage - loop through the global student array and calculate average grade and return that value
@@ -101,23 +90,7 @@ function calculateAverage(){
 
     //display grade Avg on screen
     $(".avgGrade").text(gradeAvg);
-};
-
-/**
- * updateData - centralized function to update the average and call student list update
- */
-
-/**
- * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
- */
-
-/**
- * addStudentToDom - take in a student object, create html elements from the values and then append the elements
- * into the .student_list tbody
- * @param object
- */
-
-
+}
 
 /**
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
