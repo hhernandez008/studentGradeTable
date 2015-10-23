@@ -26,6 +26,11 @@ $(function(){
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
  */
 function addStudent() {
+    //Check if input is empty or not a number
+    var check = $("#studentGrade").val();
+    if(isNaN(check) || check == ""){
+        return;
+    }
     //Get student data from input form
     var name = $("#studentName").val();
     var course = $("#course").val();
@@ -53,9 +58,10 @@ function addStudent() {
     $newRow.append($rowName);
     $newRow.append($rowCourse);
     $newRow.append($rowGrade);
-    console.log($newRow[0]);
 
     $('.student-list').append($newRow);
+
+
 
 
 
@@ -66,7 +72,7 @@ function addStudent() {
     //addStudentToDom(StudentObject);
 
     //place object in student_array
-    //student_array.push(StudentObject);
+    student_array.push(studentObject);
 
     //calculate & update grade average
     calculateAverage();
@@ -110,7 +116,6 @@ function calculateAverage(){
  * into the .student_list tbody
  * @param object
  */
-
 
 
 
