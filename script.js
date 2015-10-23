@@ -8,16 +8,23 @@ $(function(){
     /**
      * addClicked - Event Handler when user clicks the add button
      */
-    $("button.btn-success").click(function () {
+    $("button.btn-success").click(function(){
         addStudent();
     });
 
     /**
      * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
      */
-    $("button.btn-default").click(function () {
+    $("button.btn-default").click(function(){
         //clear form
         clearAddStudentForm();
+    });
+
+    /**
+     * deleteClicked - Event Handler when user clicks a delete button, clear row data in student table
+     */
+    $(".student-list-container").on('click', 'button.btn-danger', function(){
+        $(this).parents("tr").remove();
     });
 
 }); //END doc ready function
@@ -90,6 +97,8 @@ function calculateAverage(){
     //display grade Avg on screen
     $(".avgGrade").text(gradeAvg);
 }
+
+
 
 /**
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
