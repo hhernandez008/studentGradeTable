@@ -36,22 +36,37 @@ function addStudent() {
     gradeSum += grade;
 
     //store data in object
-    var StudentObject = {
-        studentName: name,
-        studentCourse: course,
-        studentGrade: grade
+
+    var studentObject = {
+        name: name,
+        course: course,
+        grade: grade
     };
 
-    for(var i = 0; i < StudentObject.length; i++){
-        /*$(tr).append(StudentObject[i]);*/
-        console.log(StudentObject[i]);
-    };
+    console.log(studentObject);
+
+    var $newRow = $('<tr>');
+    var $rowName = $('<td>').text(studentObject.name);
+    var $rowCourse = $('<td>').text(studentObject.course);
+    var $rowGrade = $('<td>').text(studentObject.grade);
+
+    $newRow.append($rowName);
+    $newRow.append($rowCourse);
+    $newRow.append($rowGrade);
+    console.log($newRow[0]);
+
+    $('.student-list').append($newRow);
+
+
+
+
+
 
     //add object to table
-    addStudentToDom(StudentObject);
+    //addStudentToDom(StudentObject);
 
     //place object in student_array
-    student_array.push(StudentObject);
+    //student_array.push(StudentObject);
 
     //calculate & update grade average
     calculateAverage();
