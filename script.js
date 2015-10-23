@@ -2,7 +2,7 @@
  * Define all global variables here
  */
 var student_array = [];
-var gradeSum = null;
+var gradeSum = null; //hello
 
 $(function(){
     /**
