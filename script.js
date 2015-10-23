@@ -83,7 +83,6 @@ function clearAddStudentForm() {
 /**
  * calculateAverage - loop through the global student array and calculate average grade and return that value
  */
-
 function calculateAverage(){
     //calculate average
     var gradeAvg = Math.round(gradeSum/student_array.length);
