@@ -84,8 +84,10 @@ function addStudent() {
     //assign click handler to delete button
     $deleteButton.click(function(){
        $(this).parent().remove();
+        studentObject.delete();
     });
-    $deleteButton.click(studentObject.delete);
+
+
 
 
     $newRow.append($rowName);
