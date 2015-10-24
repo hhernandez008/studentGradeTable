@@ -33,6 +33,9 @@ $(function(){
 /**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
  */
+
+
+
 function addStudent() {
     //Check if input is empty or not a number
     var gradeCheck = $("#studentGrade").val();
@@ -54,9 +57,14 @@ function addStudent() {
         course: course,
         grade: grade,
         delete: function(){
-            student_array.splice(this, 1);
-            $(this).parent().remove();
-            console.log(student_array);
+            for(var i in student_array){
+                if(student_array[i] === studentObject){
+                    student_array.splice(i, 1);
+                    console.log(student_array);
+                    break;
+                }
+
+            }
         }
     };
 
@@ -74,6 +82,9 @@ function addStudent() {
         });
 
     //assign click handler to delete button
+    $deleteButton.click(function(){
+       $(this).parent().remove();
+    });
     $deleteButton.click(studentObject.delete);
 
 
