@@ -18,14 +18,15 @@ $(function(){
     $("button.btn-default").click(function(){
         //clear form
         clearAddStudentForm();
+
     });
 
     /**
      * deleteClicked - Event Handler when user clicks a delete button, clear row data in student table
      */
-    $(".student-list-container").on('click', 'button.btn-danger', function(){
-        $(this).parents("tr").remove();
-    });
+    //$(".student-list-container").on('click', 'button.btn-danger', function(){
+    //    $(this).parents("tr").remove();
+    //});
 
 }); //END doc ready function
 
@@ -35,7 +36,7 @@ $(function(){
 function addStudent() {
     //Check if input is empty or not a number
     var gradeCheck = $("#studentGrade").val();
-    if(isNaN(gradeCheck) || gradeCheck == ""){
+    if(isNaN(gradeCheck) || gradeCheck === ""){
         return;
     }
     //Get student data from input form
@@ -51,15 +52,30 @@ function addStudent() {
     var studentObject = {
         name: name,
         course: course,
-        grade: grade
+        grade: grade,
+        delete: function(){
+            student_array.splice(this, 1);
+            $(this).parent().remove();
+            console.log(student_array);
+        }
     };
+
+    //place object in student_array
+    student_array.push(studentObject);
 
     //add studentObject to HTML table in DOM
     var $newRow = $('<tr>');
     var $rowName = $('<td>').text(studentObject.name);
     var $rowCourse = $('<td>').text(studentObject.course);
     var $rowGrade = $('<td>').text(studentObject.grade);
-    var $deleteButton = $('<td>').html('<button class="btn btn-danger">Delete</button>');
+    var $deleteButton = $('<button>', {
+            class: "btn btn-danger",
+            text: "Delete"
+        });
+
+    //assign click handler to delete button
+    $deleteButton.click(studentObject.delete);
+
 
     $newRow.append($rowName);
     $newRow.append($rowCourse);
@@ -68,8 +84,6 @@ function addStudent() {
 
     $('.student-list').append($newRow);
 
-    //place object in student_array
-    student_array.push(studentObject);
 
     //calculate & update grade average
     calculateAverage();
@@ -97,7 +111,6 @@ function calculateAverage(){
     //display grade Avg on screen
     $(".avgGrade").text(gradeAvg);
 }
-
 
 
 /**
