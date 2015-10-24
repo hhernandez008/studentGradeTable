@@ -57,8 +57,8 @@ function addStudent() {
         course: course,
         grade: grade,
         delete: function(){
-            for(var i in student_array){
-                if(student_array[i] === studentObject){
+            for(var i in student_array){//for every index value in student array
+                if(student_array[i] === studentObject){ //does the first index we're checking === literally this object that we're talking about? we know what object we're talking about because we included this specific reference in the click handler for the delete button we made
                     student_array.splice(i, 1);
                     console.log(student_array);
                     break;
@@ -84,7 +84,7 @@ function addStudent() {
     //assign click handler to delete button
     $deleteButton.click(function(){
        $(this).parent().remove();
-        studentObject.delete();
+        studentObject.delete(); //before we ship off this row and the button to the DOM, these are all associated with the object we just made above!
     });
 
 
