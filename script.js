@@ -71,25 +71,20 @@ function addStudent() {
     //place object in student_array
     student_array.push(studentObject);
 
-    //add studentObject to HTML table in DOM
+    //add studentObject to HTML table in DOM    row start
     var $newRow = $('<tr>');
     var $rowName = $('<td>').text(studentObject.name);
     var $rowCourse = $('<td>').text(studentObject.course);
     var $rowGrade = $('<td>').text(studentObject.grade);
-    var $deleteButton = $('<button>', {
-            class: "btn btn-danger",
-            text: "Delete"
-        });
 
-    //assign click handler to delete button
-    $deleteButton.click(function(){
-       $(this).parent().remove();
-        studentObject.delete(); //before we ship off this row and the button to the DOM, these are all associated with the object we just made above!
-    });
+    var $deleteButton = $('<button>').addClass('btn btn-danger').text('Danger').click(function(){ //look at this awesome long chain
+        $(this).parent().remove();
+        studentObject.delete();
+    });//row end
 
+ //before we ship off this row and the button to the DOM, these are all associated with the object we just made above!
 
-
-
+    //ship row to DOM
     $newRow.append($rowName);
     $newRow.append($rowCourse);
     $newRow.append($rowGrade);
