@@ -61,12 +61,12 @@ function addStudent() {
     var $rowName = $('<td>').text(studentObject.name);
     var $rowCourse = $('<td>').text(studentObject.course);
     var $rowGrade = $('<td>').text(studentObject.grade);
-
     var $deleteButton = $('<button>').addClass('btn btn-danger').text('Delete').click(function(){ //look at this awesome
     // long chain
-        $(this).parent().remove();
+        $(this).parents("tr").remove();
         studentObject.delete();
-    });//row end
+    });
+    var $tdDeleteButton = $('<td>');
 
  //before we ship off this row and the button to the DOM, these are all associated with the object we just made above!
 
@@ -74,7 +74,8 @@ function addStudent() {
     $newRow.append($rowName);
     $newRow.append($rowCourse);
     $newRow.append($rowGrade);
-    $newRow.append($deleteButton);
+    $tdDeleteButton.append($deleteButton);
+    $newRow.append($tdDeleteButton);
 
     $('.student-list').append($newRow);
 
@@ -101,7 +102,7 @@ function calculateAverage(){
     var gradeSum = null;
 
     for(var i = 0; i < student_array.length; i++){
-        gradeSum += student_array[i];
+        gradeSum += student_array[i].grade;
     }
     //calculate average
     var gradeAvg = Math.round(gradeSum/student_array.length);
