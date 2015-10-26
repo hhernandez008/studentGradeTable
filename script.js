@@ -47,6 +47,7 @@ function addStudent() {
                 if(student_array[i] === this){ //does the first index we're checking === literally this object that we're talking about? we know what object we're talking about because we included this specific reference in the click handler for the delete button we made
                     student_array.splice(i, 1);//if true, now we know that the index that we're on. the value needs to be removed.
                     console.log(student_array);
+                    calculateAverage();
                     break;
                 }
             }
