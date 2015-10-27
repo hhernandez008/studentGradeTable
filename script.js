@@ -27,16 +27,30 @@ $(function(){
  */
 
 function addStudent() {
+
+    var $gradeEl = $("#studentGrade");
     //Check if input is empty or not a number
-    var gradeCheck = $("#studentGrade").val();
-    if(isNaN(gradeCheck) || gradeCheck === ""){
+    var gradeVal= $gradeEl.val();
+
+    if(isNaN(gradeVal) || gradeVal === ""){
+        $("#validation").remove();
+        $gradeEl.parent().after("<div style='color:red' id='validation'>Grade  Required</div>");
+        $gradeEl.focus();
+        $("#studentGrade:focus").css({
+            'border-color': 'red',
+            'box-shadow': 'none'
+        });
+        clearAddStudentForm();
         return;
     }
+
+    $("#studentGrade:focus").attr('');
+    $("#validation").remove();
     //Get student data from input form
     var name = $("#studentName").val();
     var course = $("#course").val();
     //store grade as integer
-    var grade = parseInt(gradeCheck);
+    var grade = parseInt(gradeVal);
 
     //store input data in object
     var studentObject = {
