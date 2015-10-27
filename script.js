@@ -7,7 +7,7 @@ $(function(){
     /**
      * addClicked - Event Handler when user clicks the add button
      */
-    $("button.btn-success").click(function(){
+    $(".btn-success").click(function(){
         addStudent();
     });
 
@@ -20,6 +20,7 @@ $(function(){
     });
 
 }); //END doc ready function
+
 
 /**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
