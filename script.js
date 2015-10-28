@@ -168,6 +168,12 @@ function clearAddStudentForm() {
 function calculateAverage(){
     var gradeSum = null;
 
+    if (student_array.length <= 0){
+        //display grade Avg on screen
+        $(".avgGrade").text("0");
+        return;
+    }
+
     for(var i = 0; i < student_array.length; i++){
         gradeSum += student_array[i].grade;
     }
