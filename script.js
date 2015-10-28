@@ -2,17 +2,12 @@
  * Define all global variables here
  */
 var student_array = [];
-
-
-
-
+// variables to hold #studentName, #course, #studentGrade
+var $nameEl;
+var $courseEl;
+var $gradeEl;
 
 $(function(){
-    // variables to hold #studentName, #course, #studentGrade
-    var $nameEl;
-    var $courseEl;
-    var $gradeEl;
-
     /**
      * addClicked - Event Handler when user clicks the add button
      */
@@ -28,6 +23,11 @@ $(function(){
         clearAddStudentForm();
     });
 
+    //assign values to variables
+    $nameEl = $("#studentName");
+    $courseEl = $("#course");
+    $gradeEl = $("#studentGrade");
+
 }); //END doc ready function
 
 
@@ -36,17 +36,12 @@ $(function(){
  */
 
 function addStudent() {
-
-    $nameEl = $("#studentName");
-    $courseEl = $("#course");
-    $gradeEl = $("#studentGrade");
-    
     //Check if input is empty
     var studentVal = $nameEl.val();
     var courseVal = $courseEl.val();
     var gradeVal= $gradeEl.val();
 
-    if(studentVal === "" || courseVal === "" || gradeVal === "") {
+    if(studentVal === "" || courseVal === "" || gradeVal === "" || isNaN(gradeVal) || 0 > gradeVal || gradeVal > 100) {
         $(".validation").remove();
         $nameEl.removeAttr('style');
         $courseEl.removeAttr('style');
@@ -80,21 +75,20 @@ function addStudent() {
         }
 
         //if Student Grade is empty or NaN
-        if (isNaN(gradeVal) || gradeVal === "") {
+        if (isNaN(gradeVal) || gradeVal === "" || 0 > gradeVal || gradeVal > 100) {
             //Insert text telling user to input grade
             $gradeEl.parent().after("<div style='color:red' class='validation'>Number Grade Required</div>");
             $gradeEl.focus();
             //change border of required field
-            $("#studentGrade").css({
+            $gradeEl.css({
                 'border-color': 'red',
                 'box-shadow': 'none'
             });
-            $("#studentGrade").val("");
+            $gradeEl.val("");
         }
 
-
         return;
-    }
+    } // end if(
 
     $gradeEl.removeAttr('style');
     $(".validation").remove();
