@@ -3,7 +3,16 @@
  */
 var student_array = [];
 
+
+
+
+
 $(function(){
+    // variables to hold #studentName, #course, #studentGrade
+    var $nameEl;
+    var $courseEl;
+    var $gradeEl;
+
     /**
      * addClicked - Event Handler when user clicks the add button
      */
@@ -28,27 +37,70 @@ $(function(){
 
 function addStudent() {
 
-    var $gradeEl = $("#studentGrade");
-    //Check if input is empty or not a number
+    $nameEl = $("#studentName");
+    $courseEl = $("#course");
+    $gradeEl = $("#studentGrade");
+    
+    //Check if input is empty
+    var studentVal = $nameEl.val();
+    var courseVal = $courseEl.val();
     var gradeVal= $gradeEl.val();
 
-    if(isNaN(gradeVal) || gradeVal === ""){
-        $("#validation").remove();
-        $gradeEl.parent().after("<div style='color:red' id='validation'>Grade  Required</div>");
-        $gradeEl.focus();
-        $("#studentGrade:focus").css({
-            'border-color': 'red',
-            'box-shadow': 'none'
-        });
-        clearAddStudentForm();
+    if(studentVal === "" || courseVal === "" || gradeVal === "") {
+        $(".validation").remove();
+        $nameEl.removeAttr('style');
+        $courseEl.removeAttr('style');
+        $gradeEl.removeAttr('style');
+        //if Student Name is empty
+        if(studentVal === ""){
+            //Insert text telling user to input name
+            $nameEl.parent().after("<div style='color:red' class='validation'>Student Name Required</div>");
+            $nameEl.focus();
+            //change border of required field
+            $nameEl.css({
+                'border-color': 'red',
+                'box-shadow': 'none'
+            });
+            $("#studentName").val("");
+
+        }
+
+        //if Student Course is empty
+        if(courseVal === ""){
+            //Insert text telling user to input course
+            $courseEl.parent().after("<div style='color:red' class='validation'>Student Course Required</div>");
+            $courseEl.focus();
+            //change border of required field
+            $courseEl.css({
+                'border-color': 'red',
+                'box-shadow': 'none'
+            });
+            $("#course").val("");
+
+        }
+
+        //if Student Grade is empty or NaN
+        if (isNaN(gradeVal) || gradeVal === "") {
+            //Insert text telling user to input grade
+            $gradeEl.parent().after("<div style='color:red' class='validation'>Number Grade Required</div>");
+            $gradeEl.focus();
+            //change border of required field
+            $("#studentGrade").css({
+                'border-color': 'red',
+                'box-shadow': 'none'
+            });
+            $("#studentGrade").val("");
+        }
+
+
         return;
     }
 
-    $("#studentGrade:focus").attr('');
-    $("#validation").remove();
+    $gradeEl.removeAttr('style');
+    $(".validation").remove();
     //Get student data from input form
-    var name = $("#studentName").val();
-    var course = $("#course").val();
+    var name = studentVal;
+    var course = courseVal;
     //store grade as integer
     var grade = parseInt(gradeVal);
 
@@ -109,6 +161,11 @@ function clearAddStudentForm() {
     $("#studentName").val("");
     $("#course").val("");
     $("#studentGrade").val("");
+
+    $(".validation").remove();
+    $nameEl.removeAttr('style');
+    $courseEl.removeAttr('style');
+    $gradeEl.removeAttr('style');
 }
 
 /**
