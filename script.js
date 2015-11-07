@@ -6,6 +6,7 @@ var student_array = [];
 var $nameEl = null;
 var $courseEl = null;
 var $gradeEl = null;
+var idNum = 0; //indicate student array location
 
 $(function(){
 
@@ -18,10 +19,12 @@ $(function(){
         if(valid){
             addStudent(studentVal, courseVal, gradeVal);
         }
+        //remove style created by failed ajax call
+        $("#dataFail").remove();
     });
 
     //Cancel clicked - Event Handler when user clicks the cancel button, should clear out student form
-    $("button.btn-default").click(function(){
+    $(".btn-default").click(function(){
         //clear form
         clearAddStudentForm();
     });
@@ -29,6 +32,8 @@ $(function(){
 
     // Load clicked - Event Handler when user clicks the load data button,
     $(".btn-info").click(function(){
+        //remove style created by failed ajax call
+        $("#dataFail").remove();
         //request student data from LearningFuze SGT API
         $.ajax({
             dataType: "json",
@@ -36,16 +41,22 @@ $(function(){
             method: "post",
             url: "http://s-apis.learningfuze.com/sgt/get",
             success: function(result) {
-                console.log(result);
-                var success = result.success;
-                if(success){
-                 //add student to table
+                var dataArr = result.data;
+                if(result.success){
+                    //add student data from server
+                    for(var i = 0; i < dataArr.length; i++){
+                        addStudent(dataArr[i].name, dataArr[i].course, dataArr[i].grade);
+                    }
+                    //turn off click, so data can not be loaded again
+                    $(".btn-info").off("click").text("Data Loaded");
                 }else{
-                    //add error message to table
+                    //indicate failed attempt after button
+                    $(".btn-info").after("<p id='dataFail' style='color:red; font-weight: bold'>Load Data Failed</p>");
                 }
             }
         });
     });
+
 
     //assign values to variables
     $nameEl = $("#studentName");
@@ -57,6 +68,9 @@ $(function(){
 
 /**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
+ * @param name
+ * @param course
+ * @param grade
  */
 
 function addStudent(name, course, grade) {
@@ -69,12 +83,12 @@ function addStudent(name, course, grade) {
         course: course,
         grade: grade,
         delete: function(){
-            for(var i in student_array){//for every index value in student array
-                if(student_array[i] === this){ //does the first index we're checking === literally this object that we're talking about? we know what object we're talking about because we included this specific reference in the click handler for the delete button we made
-                    student_array.splice(i, 1);//if true, now we know that the index that we're on. the value needs to be removed.
+            for(var i in student_array){
+                if(student_array[i] === this){
+                    student_array.splice(i, 1);
                     console.log(student_array);
                     calculateAverage();
-                    break;
+                    return; //stop function when correct student is found
                 }
             }
         }
@@ -88,28 +102,29 @@ function addStudent(name, course, grade) {
     var $rowName = $('<td>').text(studentObject.name);
     var $rowCourse = $('<td>').text(studentObject.course);
     var $rowGrade = $('<td>').text(studentObject.grade);
-    var $deleteButton = $('<button>').addClass('btn btn-danger').text('Delete').click(function(){ //look at this awesome
-    // long chain
+    var $deleteButton = $('<button>', {
+        class: 'btn btn-danger',
+        text: 'Delete'
+    }).click(function(){
         $(this).parents("tr").remove();
         studentObject.delete();
     });
     var $tdDeleteButton = $('<td>');
 
- //before we ship off this row and the button to the DOM, these are all associated with the object we just made above!
 
-    //ship row to DOM
     $newRow.append($rowName);
     $newRow.append($rowCourse);
     $newRow.append($rowGrade);
     $tdDeleteButton.append($deleteButton);
     $newRow.append($tdDeleteButton);
 
+    //ship row to DOM
     $('.student-list').append($newRow);
 
     //calculate & update grade average
     calculateAverage();
 
-    //clear form
+    //clear input form
     clearAddStudentForm();
 }//end addStudent function
 
@@ -181,11 +196,12 @@ function clearAddStudentForm() {
     $("#course").val("");
     $("#studentGrade").val("");
 
-    //remove any styles added by formValidate()
+    //remove any styles added by errors
     $(".validation").remove();
     $nameEl.removeAttr('style');
     $courseEl.removeAttr('style');
     $gradeEl.removeAttr('style');
+    $("#dataFail").remove();
 }
 
 /**
@@ -214,10 +230,11 @@ function calculateAverage(){
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
  */
 function resetDOM(){
-    var student_array = [];
-    var $nameEl = null;
-    var $courseEl = null;
-    var $gradeEl = null;
+    student_array = [];
+    $nameEl = null;
+    $courseEl = null;
+    $gradeEl = null;
+    idNum = 0;
     $("tbody > tr").remove();
 }
 
