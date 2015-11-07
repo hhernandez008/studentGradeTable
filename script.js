@@ -8,7 +8,10 @@ var $courseEl = null;
 var $gradeEl = null;
 var idNum = 0; //indicate student array location
 
+//Document ready
 $(function(){
+    //Listen for the document to load and reset the data to the initial state
+    resetDOM();
 
     //Add clicked - Event Handler when user clicks the add button
     $(".btn-success").click(function(){
@@ -29,7 +32,6 @@ $(function(){
         clearAddStudentForm();
     });
 
-
     // Load clicked - Event Handler when user clicks the load data button,
     $(".btn-info").click(function(){
         //remove style created by failed ajax call
@@ -47,18 +49,21 @@ $(function(){
                     for(var i = 0; i < dataArr.length; i++){
                         addStudent(dataArr[i].name, dataArr[i].course, dataArr[i].grade);
                     }
-                    //turn off click, so data can not be loaded again
+                    //turn off click, so data can not be loaded a second time
                     $(".btn-info").off("click").text("Data Loaded");
                 }else{
                     //indicate failed attempt after button
-                    $(".btn-info").after("<p id='dataFail' style='color:red; font-weight: bold'>Load Data Failed</p>");
+                    $(".btn-info").after("<p>", {
+                        id: "dataFail",
+                        style:"color:red; font-weight: bold",
+                        text: "Student Data Failed to Load"
+                    })
                 }
-            }
-        });
-    });
+            } //end success function
+        }); //end ajax call
+    }); // end .btn-info click handler
 
-
-    //assign values to variables
+    //assign values from DOM to variables
     $nameEl = $("#studentName");
     $courseEl = $("#course");
     $gradeEl = $("#studentGrade");
@@ -72,7 +77,6 @@ $(function(){
  * @param course
  * @param grade
  */
-
 function addStudent(name, course, grade) {
     //store grade as integer
     grade = parseInt(grade);
@@ -111,7 +115,6 @@ function addStudent(name, course, grade) {
     });
     var $tdDeleteButton = $('<td>');
 
-
     $newRow.append($rowName);
     $newRow.append($rowCourse);
     $newRow.append($rowGrade);
@@ -136,25 +139,26 @@ function addStudent(name, course, grade) {
  * @returns {boolean}
  */
 function formValidate(name, course, grade){
+    //clear any formatting from previous invalid form
+    $(".validation").remove();
+    $nameEl.removeAttr('style');
+    $courseEl.removeAttr('style');
+    $gradeEl.removeAttr('style');
 
-    //Check if input is empty
+    //Check if input is empty or incorrect value is entered
     if(name === "" || course === "" || grade === "" || isNaN(grade) || 0 > grade || grade > 100) {
-        $(".validation").remove();
-        $nameEl.removeAttr('style');
-        $courseEl.removeAttr('style');
-        $gradeEl.removeAttr('style');
-        //if Student Name is empty
-        if(name === ""){
-            //Insert text telling user to input name
-            $nameEl.parent().after("<div style='color:red' class='validation'>Student Name Required</div>");
-            $nameEl.focus();
+
+        //if Student Grade is empty, NaN, outside of 1 - 100
+        if (isNaN(grade) || grade === "" || grade < 1 || grade > 100) {
+            //Insert text telling user to input grade
+            $gradeEl.parent().after("<div style='color:red' class='validation'>Number From 1 - 100 Required</div>");
+            $gradeEl.focus();
             //change border of required field
-            $nameEl.css({
+            $gradeEl.css({
                 'border-color': 'red',
                 'box-shadow': 'none'
             });
-            $("#studentName").val("");
-
+            $gradeEl.val("");
         }
 
         //if Student Course is empty
@@ -167,24 +171,27 @@ function formValidate(name, course, grade){
                 'border-color': 'red',
                 'box-shadow': 'none'
             });
+            //clear the input field
             $("#course").val("");
-
         }
 
-        //if Student Grade is empty or NaN
-        if (isNaN(grade) || grade === "" || 0 > grade || grade > 100) {
-            //Insert text telling user to input grade
-            $gradeEl.parent().after("<div style='color:red' class='validation'>Number Grade Required</div>");
-            $gradeEl.focus();
+        //if Student Name is empty
+        if(name === ""){
+            //Insert text telling user to input name
+            $nameEl.parent().after("<div style='color:red' class='validation'>Student Name Required</div>");
+            $nameEl.focus();
             //change border of required field
-            $gradeEl.css({
+            $nameEl.css({
                 'border-color': 'red',
                 'box-shadow': 'none'
             });
-            $gradeEl.val("");
+            //clear the input field
+            $("#studentName").val("");
         }
+        //input form is not valid
         return false;
     }
+    //input form is valid
     return true;
 }
 
@@ -192,11 +199,12 @@ function formValidate(name, course, grade){
  * clearAddStudentForm - clears out the form values based on inputIds variable
  */
 function clearAddStudentForm() {
+    //clear form inputs
     $("#studentName").val("");
     $("#course").val("");
     $("#studentGrade").val("");
 
-    //remove any styles added by errors
+    //remove any styles added by errors/invalid entries
     $(".validation").remove();
     $nameEl.removeAttr('style');
     $courseEl.removeAttr('style');
@@ -209,13 +217,14 @@ function clearAddStudentForm() {
  */
 function calculateAverage(){
     var gradeSum = null;
-
+    //check for values in array
     if (student_array.length <= 0){
         //display grade Avg on screen
         $(".avgGrade").text("0");
         return;
     }
 
+    //add up all student grades
     for(var i = 0; i < student_array.length; i++){
         gradeSum += student_array[i].grade;
     }
@@ -238,8 +247,6 @@ function resetDOM(){
     $("tbody > tr").remove();
 }
 
-/**
- * Listen for the document to load and reset the data to the initial state
- */
+
 
 
