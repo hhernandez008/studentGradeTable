@@ -63,6 +63,15 @@ $(function(){
         }); //end ajax call
     }); // end .btn-info click handler
 
+    //Sort student data
+    $("th").on("click", function(){
+        //only sort Headers with a sort attribute
+        if($(this).attr("sort")) {
+            $(this).siblings().children().remove("span");
+            sort(this);
+        }
+    });
+
     //assign values from DOM to variables
     $nameEl = $("#studentName");
     $courseEl = $("#course");
@@ -100,17 +109,33 @@ function addStudent(name, course, grade) {
     //place object in student_array
     student_array.push(studentObject);
 
+    //add student to the DOM
+    addStudentToDOM(studentObject);
+
+    //calculate & update grade average
+    calculateAverage();
+
+    //clear input form
+    clearAddStudentForm();
+}
+
+/**
+ * Take in the object and with properties of name, course, grade & a delete method.
+ * Print the object to the DOM
+ * @param object
+ */
+function addStudentToDOM(object){
     //add studentObject to HTML table in DOM
     var $newRow = $('<tr>');
-    var $rowName = $('<td>').text(studentObject.name);
-    var $rowCourse = $('<td>').text(studentObject.course);
-    var $rowGrade = $('<td>').text(studentObject.grade);
+    var $rowName = $('<td>').text(object.name);
+    var $rowCourse = $('<td>').text(object.course);
+    var $rowGrade = $('<td>').text(object.grade);
     var $deleteButton = $('<button>', {
         class: 'btn btn-danger',
         text: 'Delete'
     }).click(function(){
         $(this).parents("tr").remove();
-        studentObject.delete();
+        object.delete();
     });
     var $tdDeleteButton = $('<td>');
 
@@ -122,13 +147,7 @@ function addStudent(name, course, grade) {
 
     //ship row to DOM
     $('.student-list').append($newRow);
-
-    //calculate & update grade average
-    calculateAverage();
-
-    //clear input form
-    clearAddStudentForm();
-}//end addStudent function
+}
 
 /**
  * Confirm all input fields are filled and correct formats are inputted
@@ -246,6 +265,146 @@ function resetDOM(){
     $("tbody > tr").remove();
 }
 
+//Array filter/sort toggle
 
 
+function sort(element){
+    var self = element;
+    //sort array by element sort attribute
+    var sortField = $(self).attr('sort');
+
+    //Does the element have a span child?
+    if($(self).children().is("span")){
+        if($(self).children("span").hasClass("glyphicon-triangle-bottom")){
+            //sort in descending order
+            $(self).children("span").removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom");
+            descendingSort(sortField);
+        }else{
+            //sort in ascending order
+            $(self).children("span").removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top");
+            ascendingSort(sortField);
+        }
+    }else {
+        //sort in ascending order as default
+        $(self).append("<span class='glyphicon glyphicon-triangle-bottom'></span>");
+        ascendingSort(sortField);
+    }
+}
+
+function ascendingSort(field){
+    var sortedArray = student_array;
+    switch (field){
+        case "name":
+            sortedArray.sort(function(a, b){
+                var propertyA = a.name.toLowerCase();
+                var propertyB = b.name.toLowerCase();
+                //sort string ascending
+                if (propertyA < propertyB) {
+                    return -1;
+                }else if (propertyA > propertyB) {
+                    return 1;
+                }else {
+                    //default return value (no sorting)
+                    return 0;
+                }
+            });
+            break;
+        case "course":
+            sortedArray.sort(function(a, b){
+                var propertyA = a.course;
+                var propertyB = b.course;
+                //sort string ascending
+                if (propertyA < propertyB) {
+                    return -1;
+                }else if (propertyA > propertyB) {
+                    return 1;
+                }else {
+                    //default return value (no sorting)
+                    return 0;
+                }
+            });
+            break;
+        case "grade":
+            sortedArray.sort(function(a, b){
+                var propertyA= parseFloat(a.grade);
+                var propertyB=parseFloat(b.grade);
+                //sort string ascending
+                if (propertyA < propertyB) {
+                    return -1;
+                }else if (propertyA > propertyB) {
+                    return 1;
+                }else {
+                    //default return value (no sorting)
+                    return 0;
+                }
+            });
+            break;
+        default:
+            console.log("Sort field " + field + " not found.");
+    }
+    //clear DOM & repopulate student list
+    $("tbody > tr").remove();
+    for(var i = 0; i < sortedArray.length; i++){
+        addStudentToDOM(sortedArray[i]);
+    }
+}
+
+
+function descendingSort(field){
+    var sortedArray = student_array;
+    switch (field){
+        case "name":
+            sortedArray.sort(function(a, b){
+                var propertyA = a.name.toLowerCase();
+                var propertyB = b.name.toLowerCase();
+                //sort string descending
+                if (propertyA > propertyB) {
+                    return -1;
+                }else if (propertyA < propertyB) {
+                    return 1;
+                }else {
+                    //default return value (no sorting)
+                    return 0;
+                }
+            });
+            break;
+        case "course":
+            sortedArray.sort(function(a, b){
+                var propertyA = a.course;
+                var propertyB = b.course;
+                //sort string descending
+                if (propertyA > propertyB) {
+                    return -1;
+                }else if (propertyA < propertyB) {
+                    return 1;
+                }else {
+                    //default return value (no sorting)
+                    return 0;
+                }
+            });
+            break;
+        case "grade":
+            sortedArray.sort(function(a, b){
+                var propertyA= parseFloat(a.grade);
+                var propertyB=parseFloat(b.grade);
+                //sort string descending
+                if (propertyA > propertyB) {
+                    return -1;
+                }else if (propertyA < propertyB) {
+                    return 1;
+                }else {
+                    //default return value (no sorting)
+                    return 0;
+                }
+            });
+            break;
+        default:
+            console.log("Sort field " + field + " not found.");
+    }
+    //clear DOM & populate sorted student list
+    $("tbody > tr").remove();
+    for(var i = 0; i < sortedArray.length; i++){
+        addStudentToDOM(sortedArray[i]);
+    }
+}
 
