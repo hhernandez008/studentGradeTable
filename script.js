@@ -1,12 +1,11 @@
 /**
  * Define all global variables here
  */
-var student_array = [];
+var studentArray = [];
 // variables to hold #studentName, #course, #studentGrade
 var $nameEl = null;
 var $courseEl = null;
 var $gradeEl = null;
-var idNum = 0; //indicate student array location
 
 //Document ready
 $(function(){
@@ -77,6 +76,7 @@ $(function(){
     $courseEl = $("#course");
     $gradeEl = $("#studentGrade");
 
+
 }); //END doc ready function
 
 /**
@@ -95,10 +95,10 @@ function addStudent(name, course, grade) {
         course: course,
         grade: grade,
         delete: function(){
-            for(var i in student_array){
-                if(student_array[i] === this){
-                    student_array.splice(i, 1);
-                    console.log(student_array);
+            for(var i in studentArray){
+                if(studentArray[i] === this){
+                    studentArray.splice(i, 1);
+                    console.log(studentArray);
                     calculateAverage();
                     return; //stop function when correct student is found
                 }
@@ -106,8 +106,8 @@ function addStudent(name, course, grade) {
         }
     };
 
-    //place object in student_array
-    student_array.push(studentObject);
+    //place object in studentArray
+    studentArray.push(studentObject);
 
     //add student to the DOM
     addStudentToDOM(studentObject);
@@ -236,38 +236,29 @@ function clearAddStudentForm() {
 function calculateAverage(){
     var gradeSum = null;
     //check for values in array
-    if (student_array.length <= 0){
+    if (studentArray.length <= 0){
         //display grade Avg on screen
         $(".avgGrade").text("0");
         return;
     }
 
     //add up all student grades
-    for(var i = 0; i < student_array.length; i++){
-        gradeSum += student_array[i].grade;
+    for(var i = 0; i < studentArray.length; i++){
+        gradeSum += studentArray[i].grade;
     }
     //calculate average
-    var gradeAvg = Math.round(gradeSum/student_array.length);
+    var gradeAvg = Math.round(gradeSum/studentArray.length);
 
     //display grade Avg on screen
     $(".avgGrade").text(gradeAvg);
 }
 
 /**
- * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
+ * Sort list by element param.
+ * Add a icon to indicate that the list is sorted by that element & weather it is in ascending or descending order.
+ * Call ascendingSort or descendingSort to sort list in the correct order.
+ * @param element
  */
-function resetDOM(){
-    student_array = [];
-    $nameEl = null;
-    $courseEl = null;
-    $gradeEl = null;
-    idNum = 0;
-    $("tbody > tr").remove();
-}
-
-//Array filter/sort toggle
-
-
 function sort(element){
     var self = element;
     //sort array by element sort attribute
@@ -291,8 +282,13 @@ function sort(element){
     }
 }
 
+/**
+ * Sort array by field param in ascending order.
+ * @param field
+ */
 function ascendingSort(field){
-    var sortedArray = student_array;
+    //make a copy of the studentArray to sort
+    var sortedArray = studentArray.slice(0);
     switch (field){
         case "name":
             sortedArray.sort(function(a, b){
@@ -349,9 +345,13 @@ function ascendingSort(field){
     }
 }
 
-
+/**
+ * Sort array by field param in descending order.
+ * @param field
+ */
 function descendingSort(field){
-    var sortedArray = student_array;
+    //make copy of studentArray to sort
+    var sortedArray = studentArray.slice(0);
     switch (field){
         case "name":
             sortedArray.sort(function(a, b){
@@ -408,3 +408,13 @@ function descendingSort(field){
     }
 }
 
+/**
+ * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
+ */
+function resetDOM(){
+    studentArray = [];
+    $nameEl = null;
+    $courseEl = null;
+    $gradeEl = null;
+    $("tbody > tr").remove();
+}
