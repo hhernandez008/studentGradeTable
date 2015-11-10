@@ -2,6 +2,7 @@
  * Define all global variables here
  */
 var studentArray = [];
+var key = "JhpapQQx34";
 // variables to hold #studentName, #course, #studentGrade
 var $nameEl = null;
 var $courseEl = null;
@@ -12,14 +13,37 @@ $(function(){
     //Listen for the document to load and reset the data to the initial state
     resetDOM();
 
+    //Request student data from LearningFuze SGT API
+    $.ajax({
+        dataType: "json",
+        data: {api_key: key},
+        method: "post",
+        url: "http://s-apis.learningfuze.com/sgt/get",
+        success: function(result) {
+            var dataArr = result.data;
+            if(result.success){
+                $("tbody > tr").remove();
+                //add student data from server
+                for(var i = 0; i < dataArr.length; i++){
+                    addStudent(dataArr[i]);
+                }
+            }else{
+                //indicate failed attempt/false result.success
+
+            }
+        } //end success function
+    }); //end ajax call
+
     //Add clicked - Event Handler when user clicks the add button
     $(".btn-success").click(function(){
-        var studentVal = $nameEl.val();
-        var courseVal = $courseEl.val();
-        var gradeVal= $gradeEl.val();
-        var valid = formValidate(studentVal, courseVal, gradeVal);
+        var student = {
+            name: $nameEl.val(),
+            course: $courseEl.val(),
+            grade: $gradeEl.val()
+        };
+        var valid = formValidate(student);
         if(valid){
-            addStudent(studentVal, courseVal, gradeVal);
+            addStudent(student);
         }
         //remove style created by failed ajax call
         $("#dataFail").remove();
@@ -38,24 +62,24 @@ $(function(){
         //request student data from LearningFuze SGT API
         $.ajax({
             dataType: "json",
-            data: {api_key: "JhpapQQx34"},
+            data: {api_key: key},
             method: "post",
             url: "http://s-apis.learningfuze.com/sgt/get",
             success: function(result) {
                 var dataArr = result.data;
                 if(result.success){
+                    //clear DOM
+                    $("tbody > tr").remove();
                     //add student data from server
                     for(var i = 0; i < dataArr.length; i++){
-                        addStudent(dataArr[i].name, dataArr[i].course, dataArr[i].grade);
+                        addStudent(dataArr[i]);
                     }
-                    //turn off click, so data can not be loaded a second time
-                    $(".btn-info").off("click").text("Data Loaded");
                 }else{
                     //indicate failed attempt after button
                     $(".btn-info").after("<p>", {
                         id: "dataFail",
                         style:"color:red; font-weight: bold",
-                        text: "Student Data Failed to Load"
+                        text: "Student Data Failed to Reload"
                     })
                 }
             } //end success function
@@ -81,42 +105,106 @@ $(function(){
 
 /**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
- * @param name
- * @param course
- * @param grade
+ * @param object
  */
-function addStudent(name, course, grade) {
+function addStudent(object) {
     //store grade as integer
-    grade = parseInt(grade);
+    object.grade = parseInt(object.grade);
+    //Does the student already have an ID? It was passed in from database. Don't pass back.
+    if(object.hasOwnProperty("id")){
+        object.delete = function () {
+            $.ajax({
+                dataType: "json",
+                data: {api_key: key, student_id: object.id},
+                method: "post",
+                url: "http://s-apis.learningfuze.com/sgt/delete",
+                success: function(result) {
+                    if(result.success) {
+                        for (var i in studentArray) {
+                             if (studentArray[i].id === object.id) {
+                                 studentArray.splice(i, 1);
+                                 //calculate the new average
+                                 calculateAverage();
+                                 return studentArray; //stop function when correct student is found
+                             }
+                        }
+                    }else{
+                        //TODO show failed delete attempt.
+                    }
 
-    //store input data in object
-    var studentObject = {
-        name: name,
-        course: course,
-        grade: grade,
-        delete: function(){
-            for(var i in studentArray){
-                if(studentArray[i] === this){
-                    studentArray.splice(i, 1);
-                    console.log(studentArray);
+
+                } //end success function
+            }); //end ajax call
+        };
+        //place object in studentArray
+        studentArray.push(object);
+
+        //add student to the DOM
+        addStudentToDOM(object);
+
+        //calculate & update grade average
+        calculateAverage();
+
+        //clear input form
+        clearAddStudentForm();
+    }else {
+        //send the student to the database
+        $.ajax({
+            dataType: "json",
+            data: {
+                api_key: key,
+                name: object.name,
+                course: object.course,
+                grade: object.grade
+            },
+            method: "post",
+            url: "http://s-apis.learningfuze.com/sgt/create",
+            //add id & delete method to object
+            success: function (response) {
+                if (response.success){
+                    object.id = response.new_id;
+                    object.delete = function () {
+                        $.ajax({
+                            dataType: "json",
+                            data: {api_key: key, student_id: object.id},
+                            method: "post",
+                            url: "http://s-apis.learningfuze.com/sgt/delete",
+                            success: function(result) {
+                                if(result.success) {
+                                    for (var i in studentArray) {
+                                        if (studentArray[i].id === object.id) {
+                                            studentArray.splice(i, 1);
+                                            //calculate the new average
+                                            calculateAverage();
+                                            return studentArray; //stop function when correct student is found
+                                        }
+                                    }
+                                }else{
+                                    //TODO show failed delete attempt.
+                                }
+                            } //end success function
+                        }); //end ajax call
+                    };
+                    //place object in studentArray
+                    studentArray.push(object);
+
+                    //add student to the DOM
+                    addStudentToDOM(object);
+
+                    //calculate & update grade average
                     calculateAverage();
-                    return; //stop function when correct student is found
+
+                    //clear input form
+                    clearAddStudentForm();
+                    console.log(object);
+                }else{
+                    //display response.error
                 }
             }
-        }
-    };
+        });
+    }
 
-    //place object in studentArray
-    studentArray.push(studentObject);
 
-    //add student to the DOM
-    addStudentToDOM(studentObject);
-
-    //calculate & update grade average
-    calculateAverage();
-
-    //clear input form
-    clearAddStudentForm();
 }
 
 /**
@@ -125,7 +213,7 @@ function addStudent(name, course, grade) {
  * @param object
  */
 function addStudentToDOM(object){
-    //add studentObject to HTML table in DOM
+    //add object to HTML table in DOM
     var $newRow = $('<tr>');
     var $rowName = $('<td>').text(object.name);
     var $rowCourse = $('<td>').text(object.course);
@@ -151,12 +239,10 @@ function addStudentToDOM(object){
 
 /**
  * Confirm all input fields are filled and correct formats are inputted
- * @param name
- * @param course
- * @param grade
+ * @param object
  * @returns {boolean}
  */
-function formValidate(name, course, grade){
+function formValidate(object){
     //clear any formatting from previous invalid form
     $(".validation").remove();
     $nameEl.removeAttr('style');
@@ -164,10 +250,10 @@ function formValidate(name, course, grade){
     $gradeEl.removeAttr('style');
 
     //Check if input is empty or incorrect value is entered
-    if(name === "" || course === "" || grade === "" || isNaN(grade) || 0 > grade || grade > 100) {
+    if(object.name === "" || object.course === "" || object.grade === "" || isNaN(object.grade) || 0 > object.grade || object.grade > 100) {
 
         //if Student Grade is empty, NaN, outside of 1 - 100
-        if (isNaN(grade) || grade === "" || grade < 1 || grade > 100) {
+        if (isNaN(object.grade) || object.grade === "" || object.grade < 1 || object.grade > 100) {
             //Insert text telling user to input grade
             $gradeEl.parent().after("<div style='color:red' class='validation'>Number From 1 - 100 Required</div>");
             $gradeEl.focus();
@@ -180,7 +266,7 @@ function formValidate(name, course, grade){
         }
 
         //if Student Course is empty
-        if(course === ""){
+        if(object.course === ""){
             //Insert text telling user to input course
             $courseEl.parent().after("<div style='color:red' class='validation'>Student Course Required</div>");
             $courseEl.focus();
@@ -194,7 +280,7 @@ function formValidate(name, course, grade){
         }
 
         //if Student Name is empty
-        if(name === ""){
+        if(object.name === ""){
             //Insert text telling user to input name
             $nameEl.parent().after("<div style='color:red' class='validation'>Student Name Required</div>");
             $nameEl.focus();
@@ -268,11 +354,11 @@ function sort(element){
     if($(self).children().is("span")){
         if($(self).children("span").hasClass("glyphicon-triangle-bottom")){
             //sort in descending order
-            $(self).children("span").removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom");
+            $(self).children("span").removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top");
             descendingSort(sortField);
         }else{
             //sort in ascending order
-            $(self).children("span").removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top");
+            $(self).children("span").removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom");
             ascendingSort(sortField);
         }
     }else {
@@ -307,8 +393,8 @@ function ascendingSort(field){
             break;
         case "course":
             sortedArray.sort(function(a, b){
-                var propertyA = a.course;
-                var propertyB = b.course;
+                var propertyA = a.course.toLowerCase();
+                var propertyB = b.course.toLowerCase();
                 //sort string ascending
                 if (propertyA < propertyB) {
                     return -1;
