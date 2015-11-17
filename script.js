@@ -112,7 +112,7 @@ function addStudent(object) {
     object.grade = parseInt(object.grade);
     //Does the student already have an ID? It was passed in from database. Don't pass back.
     if(object.hasOwnProperty("id")){
-        object.delete = function () {
+        object.delete = function (element) {
             $.ajax({
                 dataType: "json",
                 data: {api_key: key, student_id: object.id},
@@ -123,6 +123,7 @@ function addStudent(object) {
                         for (var i in studentArray) {
                              if (studentArray[i].id === object.id) {
                                  studentArray.splice(i, 1);
+                                 $(element).parents("tr").remove();
                                  //calculate the new average
                                  calculateAverage();
                                  return studentArray; //stop function when correct student is found
@@ -163,7 +164,7 @@ function addStudent(object) {
             success: function (response) {
                 if (response.success){
                     object.id = response.new_id;
-                    object.delete = function () {
+                    object.delete = function (element) {
                         $.ajax({
                             dataType: "json",
                             data: {api_key: key, student_id: object.id},
@@ -174,6 +175,7 @@ function addStudent(object) {
                                     for (var i in studentArray) {
                                         if (studentArray[i].id === object.id) {
                                             studentArray.splice(i, 1);
+                                            $(element).parents("tr").remove();
                                             //calculate the new average
                                             calculateAverage();
                                             return studentArray; //stop function when correct student is found
@@ -222,8 +224,7 @@ function addStudentToDOM(object){
         class: 'btn btn-danger',
         text: 'Delete'
     }).click(function(){
-        $(this).parents("tr").remove();
-        object.delete();
+        object.delete(this);
     });
     var $tdDeleteButton = $('<td>');
 
