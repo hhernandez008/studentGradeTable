@@ -40,12 +40,12 @@ $(function(){
     });
 
     // Load clicked - Event Handler when user clicks the load student data button,
-    $(".btn-info").on("click",function(){
+    $(".btn-primary").on("click",function(){
         //remove style created by failed ajax call
         $("#dataFail").remove();
         $(".student-list-container").remove("p");
         loadStudentAjaxCall();
-    }); // end .btn-info click handler
+    }); // end .btn-primary click handler
 
     //Sort student data
     $("th").on("click", function(){
@@ -73,10 +73,9 @@ $(function(){
 }); //END doc ready function
 
 /**
- *
+ * request student data from LearningFuze SGT API & add to DOM if successful
  */
 function loadStudentAjaxCall(){
-    //request student data from LearningFuze SGT API
     $.ajax({
         dataType: "json",
         data: {api_key: key},
@@ -91,6 +90,7 @@ function loadStudentAjaxCall(){
                 for(var i = 0; i < dataArr.length; i++){
                     addStudent(dataArr[i]);
                 }
+                highlightMinMaxStudent();
             }else{
                 var $errorMessage = $("<p>", {
                     id: 'dataFail',
@@ -111,6 +111,11 @@ function loadStudentAjaxCall(){
     }); //end ajax call
 }
 
+/**
+ * ajax call to delete student from database & if successful delete from array and DOM
+ * @param object
+ * @param element
+ */
 function deleteStudentAjaxCall(object, element){
     $.ajax({
         dataType: "json",
@@ -167,6 +172,9 @@ function addStudent(object) {
         //calculate & update grade average
         calculateAverage();
 
+        //highlight the students with top and low grades
+        highlightMinMaxStudent();
+
         //clear input form
         clearAddStudentForm();
     }else {
@@ -197,6 +205,9 @@ function addStudent(object) {
                     //calculate & update grade average
                     calculateAverage();
 
+                    //highlight the students with top and low grades
+                    highlightMinMaxStudent();
+
                     //clear input form
                     clearAddStudentForm();
 
@@ -219,7 +230,6 @@ function addStudent(object) {
             }
         });
     }
-
 }
 
 /**
@@ -354,6 +364,40 @@ function calculateAverage(){
 }
 
 /**
+ * Iterate through the studentArray and find the students with the maximum and minimum grades
+ * Highlight the students in the DOM
+ */
+function highlightMinMaxStudent(){
+    //remove previous highlighting
+    $("tr").removeAttr("style");
+    //Set the min & max to the grade value of the first index in array
+    var min = studentArray[0].grade;
+    var max = studentArray[0].grade;
+    //iterate through array and find the min & max grade value
+    for(var i = 1; i < studentArray.length; i++){
+        if(studentArray[i].grade > max){
+            max = studentArray[i].grade;
+        }
+        if(studentArray[i].grade < min){
+            min = studentArray[i].grade;
+        }
+    }
+
+    //highlight the rows with a grade that matches the min or max
+    var gradeCells = $("td:nth-child(3)");
+    for(var j = 0; j < gradeCells.length; j++){
+        //check the value of each grade cell
+        var $currentCell = $(gradeCells)[j];
+        var gradeValue = $($currentCell).text();
+        if(gradeValue == max){
+            $($currentCell).parent().css("background-color", "#b3ffb3");
+        } else if (gradeValue == min) {
+            $($currentCell).parent().css("background-color", "#ffd9b3");
+        }
+    }
+}
+
+/**
  * Sort list by element param.
  * Add a icon to indicate that the list is sorted by that element & weather it is in ascending or descending order.
  * Call ascendingSort or descendingSort to sort list in the correct order.
@@ -446,6 +490,9 @@ function ascendingSort(field){
     for(var i = 0; i < sortedArray.length; i++){
         addStudentToDOM(sortedArray[i]);
     }
+
+    //highlight the students with top and low grades
+    highlightMinMaxStudent();
 }
 
 /**
@@ -509,6 +556,8 @@ function descendingSort(field){
     for(var i = 0; i < sortedArray.length; i++){
         addStudentToDOM(sortedArray[i]);
     }
+    //highlight the students with top and low grades
+    highlightMinMaxStudent();
 }
 
 /**
