@@ -14,28 +14,11 @@ $(function(){
     resetDOM();
 
     //Request student data from LearningFuze SGT API
-    $.ajax({
-        dataType: "json",
-        data: {api_key: key},
-        method: "post",
-        url: "http://s-apis.learningfuze.com/sgt/get",
-        success: function(result) {
-            var dataArr = result.data;
-            if(result.success){
-                $("tbody > tr").remove();
-                //add student data from server
-                for(var i = 0; i < dataArr.length; i++){
-                    addStudent(dataArr[i]);
-                }
-            }else{
-                //indicate failed attempt/false result.success
-
-            }
-        } //end success function
-    }); //end ajax call
+    loadStudentAjaxCall();
 
     //Add clicked - Event Handler when user clicks the add button
     $(".btn-success").click(function(){
+        $(".student-list-container").remove("p");
         var student = {
             name: $nameEl.val(),
             course: $courseEl.val(),
@@ -51,48 +34,34 @@ $(function(){
 
     //Cancel clicked - Event Handler when user clicks the cancel button, should clear out student form
     $(".btn-default").click(function(){
+        $(".student-list-container").remove("p");
         //clear form
         clearAddStudentForm();
     });
 
-    // Load clicked - Event Handler when user clicks the load data button,
-    $(".btn-info").click(function(){
+    // Load clicked - Event Handler when user clicks the load student data button,
+    $(".btn-info").on("click",function(){
         //remove style created by failed ajax call
         $("#dataFail").remove();
-        //request student data from LearningFuze SGT API
-        $.ajax({
-            dataType: "json",
-            data: {api_key: key},
-            method: "post",
-            url: "http://s-apis.learningfuze.com/sgt/get",
-            success: function(result) {
-                var dataArr = result.data;
-                if(result.success){
-                    //clear DOM
-                    $("tbody > tr").remove();
-                    //add student data from server
-                    for(var i = 0; i < dataArr.length; i++){
-                        addStudent(dataArr[i]);
-                    }
-                }else{
-                    //indicate failed attempt after button
-                    $(".btn-info").after("<p>", {
-                        id: "dataFail",
-                        style:"color:red; font-weight: bold",
-                        text: "Student Data Failed to Reload"
-                    })
-                }
-            } //end success function
-        }); //end ajax call
+        $(".student-list-container").remove("p");
+        loadStudentAjaxCall();
     }); // end .btn-info click handler
 
     //Sort student data
     $("th").on("click", function(){
         //only sort Headers with a sort attribute
         if($(this).attr("sort")) {
-            $(this).siblings().children().remove("span");
+            $(this).siblings().children().removeAttr("style");
             sort(this);
         }
+    });
+
+    //set the table to fixed layout so it does not expand cells
+    $(".student-list").css("table-layout", "fixed");
+
+    //remove delete button displayed errors
+    $("body").on("click", function(){
+        $("td").find("p").remove();
     });
 
     //assign values from DOM to variables
@@ -104,6 +73,80 @@ $(function(){
 }); //END doc ready function
 
 /**
+ *
+ */
+function loadStudentAjaxCall(){
+    //request student data from LearningFuze SGT API
+    $.ajax({
+        dataType: "json",
+        data: {api_key: key},
+        method: "post",
+        url: "http://s-apis.learningfuze.com/sgt/get",
+        success: function(result) {
+            var dataArr = result.data;
+            if(result.success){
+                //clear DOM
+                $("tbody > tr").remove();
+                //add student data from server
+                for(var i = 0; i < dataArr.length; i++){
+                    addStudent(dataArr[i]);
+                }
+            }else{
+                var $errorMessage = $("<p>", {
+                    id: 'dataFail',
+                    style: 'color:red; font-weight: bold',
+                }).text("Student Data Failed to Reload | Please Try Again Later");
+                //indicate failed attempt after buttons
+                $(".student-add-form").append($errorMessage);
+            }
+        }, //end success function
+        error: function(){
+            var $errorMessage = $("<p>", {
+                id: 'dataFail',
+                style: 'color:red; font-weight: bold',
+            }).text("Student Data Failed to Reload | Please Try Again Later");
+            //indicate failed attempt after buttons
+            $(".student-add-form").append($errorMessage);
+        }
+    }); //end ajax call
+}
+
+function deleteStudentAjaxCall(object, element){
+    $.ajax({
+        dataType: "json",
+        data: {api_key: key, student_id: object.id},
+        method: "post",
+        url: "http://s-apis.learningfuze.com/sgt/delete",
+        success: function(result) {
+            if(result.success) {
+                for (var i in studentArray) {
+                    if (studentArray[i].id === object.id) {
+                        studentArray.splice(i, 1);
+                        $(element).parents("tr").remove();
+                        //calculate the new average
+                        calculateAverage();
+                        return studentArray; //stop function when correct student is found
+                    }
+                }
+            }else{
+                var $errorMessage = $("<p>", {
+                    style: "color: #f0ad4e; font-weight: bold",
+                    text:"You are not authorized to delete this student."
+                });
+                $(element).after($errorMessage);
+            }
+        }, //end success function
+        error: function(){
+            var $errorMessage = $("<p>", {
+                style: "color: #f0ad4e; font-weight: bold",
+                text: "Unable to delete this student from server. Try again later"
+            });
+            $(element).after($errorMessage);
+        }
+    }); //end ajax call
+}
+
+/**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
  * @param object
  */
@@ -113,29 +156,7 @@ function addStudent(object) {
     //Does the student already have an ID? It was passed in from database. Don't pass back.
     if(object.hasOwnProperty("id")){
         object.delete = function (element) {
-            $.ajax({
-                dataType: "json",
-                data: {api_key: key, student_id: object.id},
-                method: "post",
-                url: "http://s-apis.learningfuze.com/sgt/delete",
-                success: function(result) {
-                    if(result.success) {
-                        for (var i in studentArray) {
-                             if (studentArray[i].id === object.id) {
-                                 studentArray.splice(i, 1);
-                                 $(element).parents("tr").remove();
-                                 //calculate the new average
-                                 calculateAverage();
-                                 return studentArray; //stop function when correct student is found
-                             }
-                        }
-                    }else{
-                        //TODO show failed delete attempt.
-                    }
-
-
-                } //end success function
-            }); //end ajax call
+            deleteStudentAjaxCall(object, element);
         };
         //place object in studentArray
         studentArray.push(object);
@@ -165,27 +186,7 @@ function addStudent(object) {
                 if (response.success){
                     object.id = response.new_id;
                     object.delete = function (element) {
-                        $.ajax({
-                            dataType: "json",
-                            data: {api_key: key, student_id: object.id},
-                            method: "post",
-                            url: "http://s-apis.learningfuze.com/sgt/delete",
-                            success: function(result) {
-                                if(result.success) {
-                                    for (var i in studentArray) {
-                                        if (studentArray[i].id === object.id) {
-                                            studentArray.splice(i, 1);
-                                            $(element).parents("tr").remove();
-                                            //calculate the new average
-                                            calculateAverage();
-                                            return studentArray; //stop function when correct student is found
-                                        }
-                                    }
-                                }else{
-                                    //TODO show failed delete attempt.
-                                }
-                            } //end success function
-                        }); //end ajax call
+                        deleteStudentAjaxCall(object, element);
                     };
                     //place object in studentArray
                     studentArray.push(object);
@@ -198,14 +199,26 @@ function addStudent(object) {
 
                     //clear input form
                     clearAddStudentForm();
-                    console.log(object);
+
                 }else{
-                    //display response.error
+                    var $errorMessage = $("<p>", {
+                        id: 'dataFail',
+                        style: 'color:red; font-weight: bold'
+                    }).text("Failed to Add Student | Please Try Again");
+                    //indicate failed attempt after buttons
+                    $(".student-add-form").append($errorMessage);
                 }
+            }, //end success function
+            error: function(){
+                var $errorMessage = $("<p>",{
+                    id: 'dataFail',
+                    style: 'color:red; font-weight: bold'
+                    }).text("Failed to Add Student | Please Try Again");
+                //indicate failed attempt after buttons
+                $(".student-add-form").append($errorMessage);
             }
         });
     }
-
 
 }
 
@@ -235,7 +248,7 @@ function addStudentToDOM(object){
     $newRow.append($tdDeleteButton);
 
     //ship row to DOM
-    $('.student-list').append($newRow);
+    $('.student-list').prepend($newRow);
 }
 
 /**
@@ -348,24 +361,27 @@ function calculateAverage(){
  */
 function sort(element){
     var self = element;
+    var undefined; //undefined var for use in comparison
     //sort array by element sort attribute
     var sortField = $(self).attr('sort');
+    var $firstChild = $(self).find("span");
+    var firstChildStyle = $firstChild.attr("style");
 
-    //Does the element have a span child?
-    if($(self).children().is("span")){
-        if($(self).children("span").hasClass("glyphicon-triangle-bottom")){
-            //sort in descending order
-            $(self).children("span").removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top");
-            descendingSort(sortField);
-        }else{
-            //sort in ascending order
-            $(self).children("span").removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom");
-            ascendingSort(sortField);
-        }
-    }else {
-        //sort in ascending order as default
-        $(self).append("<span class='glyphicon glyphicon-triangle-bottom'></span>");
+    if(firstChildStyle == undefined) {
+        //down arrow to display
+        $($firstChild).attr("style", "");
+        $($firstChild).next().toggle();
         ascendingSort(sortField);
+    }else if(firstChildStyle == "display: none;") {
+        //down arrow to display
+        $($firstChild).toggle();
+        ascendingSort(sortField);
+    } else {
+        //up arrow to display
+        $($firstChild).removeAttr("style");
+        $($firstChild).toggle();
+        $($firstChild).next().toggle();
+        descendingSort(sortField);
     }
 }
 
