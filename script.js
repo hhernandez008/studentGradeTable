@@ -2,6 +2,10 @@
  * Define all global variables here
  */
 var studentArray = [];
+//Arrays for Autocomplete
+var studentNamesAuto = [];
+var coursesAuto = [];
+//API key for learningfuze database
 var key = "JhpapQQx34";
 // variables to hold #studentName, #course, #studentGrade
 var $nameEl = null;
@@ -69,6 +73,17 @@ $(function(){
     $courseEl = $("#course");
     $gradeEl = $("#studentGrade");
 
+    //Auto-Complete Student Name & Course Field
+    $($nameEl).autocomplete({
+        source: studentNamesAuto,
+        autoFocus: true,
+        minLength: 1
+    });
+    $($courseEl).autocomplete({
+        source: coursesAuto,
+        autoFocus: true,
+        minLength: 1
+    });
 
 }); //END doc ready function
 
@@ -259,6 +274,14 @@ function addStudentToDOM(object){
 
     //ship row to DOM
     $('.student-list').prepend($newRow);
+
+    //add the student name and course to the autocomplete arrays
+    if(studentNamesAuto.lastIndexOf(object.name) == -1){
+        studentNamesAuto.push(object.name);
+    }
+    if(coursesAuto.lastIndexOf(object.course) == -1){
+        coursesAuto.push(object.course);
+    }
 }
 
 /**
