@@ -361,13 +361,12 @@ function calculateAverage(){
  */
 function sort(element){
     var self = element;
-    var undefined; //undefined var for use in comparison
     //sort array by element sort attribute
     var sortField = $(self).attr('sort');
     var $firstChild = $(self).find("span");
     var firstChildStyle = $firstChild.attr("style");
 
-    if(firstChildStyle == undefined) {
+    if(typeof(firstChildStyle) == "undefined") {
         //down arrow to display
         $($firstChild).attr("style", "");
         $($firstChild).next().toggle();
