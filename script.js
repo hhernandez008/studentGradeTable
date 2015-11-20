@@ -55,8 +55,10 @@ $(function(){
     $("th").on("click", function(){
         //only sort Headers with a sort attribute
         if($(this).attr("sort")) {
-            $(this).siblings().children().removeAttr("style");
             sort(this);
+            $(this).css("color", "#337ab7");
+            $(this).siblings().removeAttr("style");
+            $(this).siblings().children().removeAttr("style");
         }
     });
 
@@ -76,12 +78,12 @@ $(function(){
     //Auto-Complete Student Name & Course Field
     $($nameEl).autocomplete({
         source: studentNamesAuto,
-        autoFocus: true,
+        autoFocus: false,
         minLength: 1
     });
     $($courseEl).autocomplete({
         source: coursesAuto,
-        autoFocus: true,
+        autoFocus: false,
         minLength: 1
     });
 
@@ -297,7 +299,7 @@ function formValidate(object){
     $gradeEl.removeAttr('style');
 
     //Check if input is empty or incorrect value is entered
-    if(object.name === "" || object.course === "" || object.grade === "" || isNaN(object.grade) || 0 > object.grade || object.grade > 100) {
+    if(object.name.length < 2 || object.course.length < 2 || object.grade === "" || isNaN(object.grade) || 0 > object.grade || object.grade > 100) {
 
         //if Student Grade is empty, NaN, outside of 1 - 100
         if (isNaN(object.grade) || object.grade === "" || object.grade < 1 || object.grade > 100) {
@@ -324,6 +326,15 @@ function formValidate(object){
             });
             //clear the input field
             $("#course").val("");
+        }else if(object.course.length < 2){
+            //Insert text telling user to input course with 2+ characters
+            $courseEl.parent().after("<div style='color:red' class='validation'>Course must be at least two characters long.</div>");
+            $courseEl.focus();
+            //change border of required field
+            $courseEl.css({
+                'border-color': 'red',
+                'box-shadow': 'none'
+            });
         }
 
         //if Student Name is empty
@@ -338,6 +349,15 @@ function formValidate(object){
             });
             //clear the input field
             $("#studentName").val("");
+        }else if(object.name.length < 2){
+            //Insert text telling user to input name
+            $nameEl.parent().after("<div style='color:red' class='validation'>Student Name must be at least two characters long.</div>");
+            $nameEl.focus();
+            //change border of required field
+            $nameEl.css({
+                'border-color': 'red',
+                'box-shadow': 'none'
+            });
         }
         //input form is not valid
         return false;
@@ -430,24 +450,32 @@ function sort(element){
     var self = element;
     //sort array by element sort attribute
     var sortField = $(self).attr('sort');
-    var $firstChild = $(self).find("span");
-    var firstChildStyle = $firstChild.attr("style");
+    var $firstChild = $(self).find("span").first();
+    var firstChildStyle = $($firstChild).attr("style");
+
+    if(firstChildStyle == ""){
+        if($($firstChild).next().attr("style") == ""){
+            $($firstChild).css("display", "none");
+            $($firstChild).next().css("display", "inline-block");
+            firstChildStyle = "display: none;";
+        }
+    }
 
     if(typeof(firstChildStyle) == "undefined") {
-        //down arrow to display
-        $($firstChild).attr("style", "");
-        $($firstChild).next().toggle();
-        ascendingSort(sortField);
-    }else if(firstChildStyle == "display: none;") {
-        //down arrow to display
-        $($firstChild).toggle();
-        ascendingSort(sortField);
-    } else {
         //up arrow to display
-        $($firstChild).removeAttr("style");
+        $($firstChild).css("display", "inline-block");
+        $($firstChild).next().toggle();
+        descendingSort(sortField);
+    }else if(firstChildStyle == "display: none;") {
+        //up arrow to display
         $($firstChild).toggle();
         $($firstChild).next().toggle();
         descendingSort(sortField);
+    } else {
+        //down arrow to display
+        $($firstChild).toggle();
+        $($firstChild).next().toggle();
+        ascendingSort(sortField);
     }
 }
 
