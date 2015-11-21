@@ -92,8 +92,8 @@ $(function(){
         minLength: 2
     });
 
-
     //TODO: only show source items that match beginning of input value
+    //TODO: change what is placed on the DOM to that of the filter searched
     $("#filtering").autocomplete({
         source: filterAuto,
         autoFocus: false,
@@ -317,7 +317,6 @@ function addStudentToDOM(object){
 
     //ship row to DOM
     $('.student-list').prepend($newRow);
-
 
     //add the student name and course to the autocomplete arrays
     if(studentNamesAuto.lastIndexOf(object.name) == -1){
