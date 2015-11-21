@@ -15,7 +15,7 @@ var $courseEl = null;
 var $gradeEl = null;
 
 //Document ready
-$(function(){
+$(document).ready(function(){
     //Listen for the document to load and reset the data to the initial state
     resetDOM();
 
@@ -95,9 +95,9 @@ $(function(){
     //TODO: only show source items that match beginning of input value
     //TODO: change what is placed on the DOM to that of the filter searched
     $("#filtering").autocomplete({
-        source: filterAuto,
+        source: coursesAuto,
         autoFocus: false,
-        minLength: 2
+        minLength: 1
     });
 
 
@@ -109,7 +109,7 @@ $(function(){
  * request student data from LearningFuze SGT API & add to DOM if successful
  */
 function loadStudentAjaxCall(){
-
+    //add loading image when student data is loading or reloading
     var $loading = $("<img>",{
         src: "images/loading.gif"
     });
@@ -318,13 +318,15 @@ function addStudentToDOM(object){
     //ship row to DOM
     $('.student-list').prepend($newRow);
 
+    //convert name & course to uppercase for storing in autocomplete arrays
+    var upperName = object.name.toUpperCase();
+    var upperCourse = object.course.toUpperCase();
     //add the student name and course to the autocomplete arrays
-    if(studentNamesAuto.lastIndexOf(object.name) == -1){
-        studentNamesAuto.push(object.name);
+    if(studentNamesAuto.lastIndexOf(upperName) == -1){
+        studentNamesAuto.push(upperName);
     }
-    if(coursesAuto.lastIndexOf(object.course) == -1){
-        coursesAuto.push(object.course);
-        filterAuto = studentNamesAuto.concat(coursesAuto);
+    if(coursesAuto.lastIndexOf(upperCourse) == -1){
+        coursesAuto.push(upperCourse);
     }
 
 }
@@ -470,15 +472,16 @@ function highlightMinMaxStudent(){
     }
 
     //highlight the rows with a grade that matches the min or max
+    //grades stored in the 3rd column
     var gradeCells = $("td:nth-child(3)");
     for(var j = 0; j < gradeCells.length; j++){
         //check the value of each grade cell
         var $currentCell = $(gradeCells)[j];
         var gradeValue = $($currentCell).text();
         if(gradeValue == max){
-            $($currentCell).parent().css("background-color", "#b3ffb3");
+            $($currentCell).parent().css("background-color", "#b3ffb3"); //green
         } else if (gradeValue == min) {
-            $($currentCell).parent().css("background-color", "#ffd9b3");
+            $($currentCell).parent().css("background-color", "#ffd9b3"); //orange
         }
     }
 }
@@ -496,37 +499,45 @@ function sort(element){
     var $firstChild = $(self).find("span").first();
     var firstChildStyle = $($firstChild).attr("style");
 
+    //if there is a empty style attr for both arrow icons set attr so the column will be sorted in ascending order
     if(firstChildStyle == ""){
         if($($firstChild).next().attr("style") == ""){
-            $($firstChild).css("display", "none");
             $($firstChild).next().css("display", "inline-block");
+            $($firstChild).css("display", "none");
+            //assign new style value to firstChildStyle
             firstChildStyle = "display: none;";
         }
     }
+
+    //triangle-top(up) for ascending (first icon/span)
+    //triangle-bottom(down) for descending (second icon/span)
 
     if(typeof(firstChildStyle) == "undefined") {
         //up arrow to display
         $($firstChild).css("display", "inline-block");
         $($firstChild).next().toggle();
-        descendingSort(sortField);
+        ascendingSort(sortField);
+        console.log("undefined");
     }else if(firstChildStyle == "display: none;") {
         //up arrow to display
         $($firstChild).toggle();
         $($firstChild).next().toggle();
-        descendingSort(sortField);
+        ascendingSort(sortField);
+        console.log("none");
     } else {
         //down arrow to display
         $($firstChild).toggle();
         $($firstChild).next().toggle();
-        ascendingSort(sortField);
+        descendingSort(sortField);
+        console.log("else");
     }
 }
 
 /**
- * Sort array by field param in ascending order.
+ * Sort array by field param in descending order.
  * @param field
  */
-function ascendingSort(field){
+function descendingSort(field){
     //make a copy of the studentArray to sort
     var sortedArray = studentArray.slice(0);
     switch (field){
@@ -579,7 +590,7 @@ function ascendingSort(field){
             console.log("Sort field " + field + " not found.");
     }
     //clear DOM & repopulate student list
-    $("tbody > tr").remove();
+    $("tbody>tr").remove();
     for(var i = 0; i < sortedArray.length; i++){
         addStudentToDOM(sortedArray[i]);
     }
@@ -589,10 +600,10 @@ function ascendingSort(field){
 }
 
 /**
- * Sort array by field param in descending order.
+ * Sort array by field param in ascending order.
  * @param field
  */
-function descendingSort(field){
+function ascendingSort(field){
     //make copy of studentArray to sort
     var sortedArray = studentArray.slice(0);
     switch (field){
@@ -645,7 +656,7 @@ function descendingSort(field){
             console.log("Sort field " + field + " not found.");
     }
     //clear DOM & populate sorted student list
-    $("tbody > tr").remove();
+    $("tbody>tr").remove();
     for(var i = 0; i < sortedArray.length; i++){
         addStudentToDOM(sortedArray[i]);
     }
@@ -661,5 +672,5 @@ function resetDOM(){
     $nameEl = null;
     $courseEl = null;
     $gradeEl = null;
-    $("tbody > tr").remove();
+    $("tbody>tr").remove();
 }
