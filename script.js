@@ -5,6 +5,7 @@ var studentArray = [];
 //Arrays for Autocomplete
 var studentNamesAuto = [];
 var coursesAuto = [];
+var filterAuto = [];
 //API key for learningfuze database
 var key = "JhpapQQx34";
 
@@ -77,19 +78,32 @@ $(function(){
     $courseEl = $("#course");
     $gradeEl = $("#studentGrade");
 
+    //TODO: only show matching first letters
+    //TODO: limit fields shown to 10 items
     //Auto-Complete Student Name & Course Field
     $($nameEl).autocomplete({
         source: studentNamesAuto,
         autoFocus: false,
-        minLength: 1
+        minLength: 2
     });
     $($courseEl).autocomplete({
         source: coursesAuto,
         autoFocus: false,
-        minLength: 1
+        minLength: 2
     });
 
+
+    //TODO: only show source items that match beginning of input value
+    $("#filtering").autocomplete({
+        source: filterAuto,
+        autoFocus: false,
+        minLength: 2
+    });
+
+
 }); //END doc ready function
+
+
 
 /**
  * request student data from LearningFuze SGT API & add to DOM if successful
@@ -122,6 +136,9 @@ function loadStudentAjaxCall(){
                 $("tbody>tr").remove();
                 //add student data from server
                 for(var i = 0; i < dataArr.length; i++){
+                    //remove any excess whitespace before storing & adding to DOM
+                    dataArr[i].name = dataArr[i].name.trim();
+                    dataArr[i].course = dataArr[i].course.trim();
                     addStudent(dataArr[i]);
                 }
                 highlightMinMaxStudent();
@@ -198,7 +215,6 @@ function addStudent(object) {
     object.grade = parseInt(object.grade);
     //Does the student already have an ID? It was passed in from database. Don't pass back.
     if(object.hasOwnProperty("id")){
-        //TODO trim strings of any leading and extra whitespace
         object.delete = function (element) {
             deleteStudentAjaxCall(object, element);
         };
@@ -217,6 +233,9 @@ function addStudent(object) {
         //clear input form
         clearAddStudentForm();
     }else {
+        //remove any excess whitespace before storing & adding to DOM
+        object.name = object.name.trim();
+        object.course = object.course.trim();
         //send the student to the database
         $.ajax({
             dataType: "json",
@@ -299,13 +318,16 @@ function addStudentToDOM(object){
     //ship row to DOM
     $('.student-list').prepend($newRow);
 
+
     //add the student name and course to the autocomplete arrays
     if(studentNamesAuto.lastIndexOf(object.name) == -1){
         studentNamesAuto.push(object.name);
     }
     if(coursesAuto.lastIndexOf(object.course) == -1){
         coursesAuto.push(object.course);
+        filterAuto = studentNamesAuto.concat(coursesAuto);
     }
+
 }
 
 /**
