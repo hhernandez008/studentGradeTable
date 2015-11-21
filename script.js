@@ -7,6 +7,7 @@ var studentNamesAuto = [];
 var coursesAuto = [];
 //API key for learningfuze database
 var key = "JhpapQQx34";
+
 // variables to hold #studentName, #course, #studentGrade
 var $nameEl = null;
 var $courseEl = null;
@@ -19,6 +20,7 @@ $(function(){
 
     //Request student data from LearningFuze SGT API
     loadStudentAjaxCall();
+
 
     //Add clicked - Event Handler when user clicks the add button
     $(".btn-success").click(function(){
@@ -93,6 +95,20 @@ $(function(){
  * request student data from LearningFuze SGT API & add to DOM if successful
  */
 function loadStudentAjaxCall(){
+
+    var $loading = $("<img>",{
+        src: "images/loading.gif"
+    });
+    var $tcell = $("<td>", {
+        colspan: "4",
+        style: "text-align: center"
+    }).append($loading);
+    var $row = $("<tr>",{
+        class: "loading"
+    }).append($tcell);
+
+    $("tbody").prepend($row);
+
     $.ajax({
         dataType: "json",
         data: {api_key: key},
@@ -102,28 +118,33 @@ function loadStudentAjaxCall(){
             var dataArr = result.data;
             if(result.success){
                 //clear DOM
-                $("tbody > tr").remove();
+                $(".loading").remove();
+                $("tbody>tr").remove();
                 //add student data from server
                 for(var i = 0; i < dataArr.length; i++){
                     addStudent(dataArr[i]);
                 }
                 highlightMinMaxStudent();
+
             }else{
+                $(".loading").remove();
                 var $errorMessage = $("<p>", {
                     id: 'dataFail',
-                    style: 'color:red; font-weight: bold',
-                }).text("Student Data Failed to Reload | Please Try Again Later");
+                    style: 'color:red; font-weight: bold; font-size: 1.25em; text-align: center'
+                }).text("Student Data Failed to Load | Please Try Again Later");
                 //indicate failed attempt after buttons
-                $(".student-add-form").append($errorMessage);
+                $(".student-list-container").prepend($errorMessage);
+
             }
         }, //end success function
         error: function(){
+            $(".loading").remove();
             var $errorMessage = $("<p>", {
                 id: 'dataFail',
-                style: 'color:red; font-weight: bold',
-            }).text("Student Data Failed to Reload | Please Try Again Later");
+                style: 'color:red; font-weight: bold; font-size: 1.25em; text-align: center'
+            }).text("Student Data Failed to Load | Please Try Again Later");
             //indicate failed attempt after buttons
-            $(".student-add-form").append($errorMessage);
+            $(".student-list-container").prepend($errorMessage);
         }
     }); //end ajax call
 }
@@ -177,6 +198,7 @@ function addStudent(object) {
     object.grade = parseInt(object.grade);
     //Does the student already have an ID? It was passed in from database. Don't pass back.
     if(object.hasOwnProperty("id")){
+        //TODO trim strings of any leading and extra whitespace
         object.delete = function (element) {
             deleteStudentAjaxCall(object, element);
         };
