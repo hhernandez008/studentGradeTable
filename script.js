@@ -47,10 +47,11 @@ $(document).ready(function(){
     });
 
     // Load clicked - Event Handler when user clicks the load student data button,
-    $(".btn-primary").on("click",function(){
+    $(".student-add-form .btn-primary").on("click",function(){
         //remove style created by failed ajax call
         $("#dataFail").remove();
         $(".student-list-container").remove("p");
+        //TODO: turn off click handler until ajax call complete
         loadStudentAjaxCall();
     }); // end .btn-primary click handler
 
@@ -82,22 +83,56 @@ $(document).ready(function(){
     //TODO: limit fields shown to 10 items
     //Auto-Complete Student Name & Course Field
     $($nameEl).autocomplete({
-        source: studentNamesAuto,
+        source: function (request, response){
+            //return source values that match input value from beginning
+            var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(request.term), "i");
+            response($.grep(studentNamesAuto, function(item){
+                return matcher.test(item.label);
+                })
+            );
+        },
         autoFocus: false,
-        minLength: 2
+        minLength: 2 //two letters needed before autocomplete menu shown
     });
     $($courseEl).autocomplete({
-        source: coursesAuto,
+        source: function (request, response){
+            //return source values that match input value from beginning
+            var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(request.term), "i");
+            response($.grep(coursesAuto, function(item){
+                return matcher.test(item.label);
+                })
+            );
+        },
         autoFocus: false,
-        minLength: 2
+        minLength: 2 //two letters needed before autocomplete menu shown
     });
 
-    //TODO: only show source items that match beginning of input value
-    //TODO: change what is placed on the DOM to that of the filter searched
-    $("#filtering").autocomplete({
-        source: coursesAuto,
+
+    $("#filterInput").autocomplete({
+        source: function(request, response){
+            //return source values that match input value from beginning
+            var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex(request.term), "i" );
+            response( $.grep(filterAuto, function(item){
+                return matcher.test(item.label);
+            }) );
+        },
         autoFocus: false,
-        minLength: 1
+        minLength: 1,
+        select: function(event, ui){
+            //insert the objects value into the input box, not its label
+            $("#filterInput").val(ui.item.value);
+            return false;
+        }
+    })
+        .autocomplete( "instance" )._renderItem = function( ul, item ) {
+        return $( "<li>" )
+            .append( "<a>" + item.label + "<br>" + item.description + "</a>" )
+            .appendTo( ul );
+    };
+
+    $("#filter").on("click", function(){
+        console.log("filtered");
+        //TODO: make filterDOM function to display the value entered in the #filterInput input
     });
 
 
@@ -318,15 +353,32 @@ function addStudentToDOM(object){
     //ship row to DOM
     $('.student-list').prepend($newRow);
 
-    //convert name & course to uppercase for storing in autocomplete arrays
-    var upperName = object.name.toUpperCase();
-    var upperCourse = object.course.toUpperCase();
+    var filterObject = {};
+
     //add the student name and course to the autocomplete arrays
-    if(studentNamesAuto.lastIndexOf(upperName) == -1){
-        studentNamesAuto.push(upperName);
+    if(studentNamesAuto.indexOf(object.name.value) == -1){
+        studentNamesAuto.push({
+            value: object.name,
+            label: object.name.toUpperCase()
+        });
+        filterObject = {
+            value: "Student Name: " + object.name,
+            label: object.name.toUpperCase(),
+            description: "Student Name"
+        };
+        filterAuto.push(filterObject);
     }
-    if(coursesAuto.lastIndexOf(upperCourse) == -1){
-        coursesAuto.push(upperCourse);
+    if(coursesAuto.indexOf(object.course.value) == -1){
+        coursesAuto.push({
+            value: object.course,
+            label: object.course.toUpperCase()
+        });
+        filterObject = {
+            value: "Student Course: " + object.course,
+            label: object.course.toUpperCase(),
+            description: "Student Course"
+        };
+        filterAuto.push(filterObject);
     }
 
 }

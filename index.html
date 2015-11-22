@@ -9,6 +9,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="script.js"></script>
 
+    <style>
+        .ui-autocomplete {
+            max-height: 250px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+        }
+    </style>
+
 </head>
 <body>
 <div class="container">
@@ -91,8 +100,11 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-filter"> </span>
                         </span>
-                    <input type="text" class="form-control" name="studentGrade" id="filtering"
+                    <input type="text" class="form-control" name="studentGrade" id="filterInput"
                             placeholder="Filter Courses">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="button" id="filter">Search</button>
+                    </span>
                 </div>
             </div>
         </div>
