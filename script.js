@@ -130,6 +130,7 @@ $(document).ready(function(){
             .appendTo( ul );
     };
     $("#filter").on("click", function(){
+        //TODO: if filter input empty DON'T filter
         unfiltered = $("tbody>tr").detach();
         var val = $("#filterInput").val();
         filterDOM(val);
@@ -138,6 +139,7 @@ $(document).ready(function(){
     $(".input-group-btn").on("click", "#clearFilter", function(){
         $("tbody>tr").remove();
         $("tbody").append(unfiltered);
+        $("#filterInput").val("");
         $("#clearFilter").remove();
     });
 
@@ -246,14 +248,28 @@ function deleteStudentAjaxCall(object, element){
 }
 
 /**
+ * Capitalize the first letter of each word in a string
+ * @param string
+ * @return string
+ */
+function capFirstWord(string){
+    //find each word and replace the first letter with a capital and the rest of the word lowercase
+    return string.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+/**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
  * @param object
  */
 function addStudent(object) {
+    //change the name and course to Proper case(first letter of each word capitalized)
+    object.name = capFirstWord(object.name);
+    object.course = capFirstWord(object.course);
     //store grade as integer
     object.grade = parseInt(object.grade);
     //Does the student already have an ID? It was passed in from database. Don't pass back.
     if(object.hasOwnProperty("id")){
+
         object.delete = function (element) {
             deleteStudentAjaxCall(object, element);
         };
@@ -373,7 +389,9 @@ function addObjectToFilters(object){
     var nameUpper = object.name.toUpperCase();
     var courseUpper =  object.course.toUpperCase();
 
-    //add the student name and course to the autocomplete arrays
+    //TODO: add object to arrays only once IGNORE CASE
+    //TODO: try match with for loop
+    //add the student name and course to the autocomplete arrays n
     if(studentNamesAuto.indexOf(object.name) == -1){
         studentNamesAuto.push(object.name);
         filterObject = {
