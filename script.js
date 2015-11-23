@@ -87,7 +87,7 @@ $(document).ready(function(){
             //return source values that match input value from beginning
             var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(request.term), "i");
             response($.grep(studentNamesAuto, function(item){
-                return matcher.test(item.label);
+                return matcher.test(item);
                 })
             );
         },
@@ -99,7 +99,7 @@ $(document).ready(function(){
             //return source values that match input value from beginning
             var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(request.term), "i");
             response($.grep(coursesAuto, function(item){
-                return matcher.test(item.label);
+                return matcher.test(item);
                 })
             );
         },
@@ -120,7 +120,7 @@ $(document).ready(function(){
         minLength: 1,
         select: function(event, ui){
             //insert the objects value into the input box, not its label
-            $("#filterInput").val(ui.item.value);
+            $("#filterInput").val(ui.item.description + ": " + ui.item.value);
             return false;
         }
     })
@@ -267,6 +267,9 @@ function addStudent(object) {
 
         //clear input form
         clearAddStudentForm();
+
+        //add student info to autocomplete arrays
+        addObjectToFilters(object);
     }else {
         //remove any excess whitespace before storing & adding to DOM
         object.name = object.name.trim();
@@ -303,6 +306,9 @@ function addStudent(object) {
 
                     //clear input form
                     clearAddStudentForm();
+
+                    //add student info to autocomplete arrays
+                    addObjectToFilters(object);
 
                 }else{
                     var $errorMessage = $("<p>", {
@@ -352,35 +358,36 @@ function addStudentToDOM(object){
 
     //ship row to DOM
     $('.student-list').prepend($newRow);
+}
 
+/**
+ * Create student name objects & course name objects to store in the autocomplete arrays
+ * @param object
+ */
+function addObjectToFilters(object){
     var filterObject = {};
+    var nameUpper = object.name.toUpperCase();
+    var courseUpper =  object.course.toUpperCase();
 
     //add the student name and course to the autocomplete arrays
-    if(studentNamesAuto.indexOf(object.name.value) == -1){
-        studentNamesAuto.push({
-            value: object.name,
-            label: object.name.toUpperCase()
-        });
+    if(studentNamesAuto.indexOf(object.name) == -1){
+        studentNamesAuto.push(object.name);
         filterObject = {
-            value: "Student Name: " + object.name,
-            label: object.name.toUpperCase(),
+            value: object.name,
+            label: nameUpper,
             description: "Student Name"
         };
         filterAuto.push(filterObject);
     }
-    if(coursesAuto.indexOf(object.course.value) == -1){
-        coursesAuto.push({
-            value: object.course,
-            label: object.course.toUpperCase()
-        });
+    if(coursesAuto.indexOf(object.course) == -1){
+        coursesAuto.push(object.course);
         filterObject = {
-            value: "Student Course: " + object.course,
-            label: object.course.toUpperCase(),
-            description: "Student Course"
+            value: object.course,
+            label: courseUpper,
+            description: "Course Name"
         };
         filterAuto.push(filterObject);
     }
-
 }
 
 /**
