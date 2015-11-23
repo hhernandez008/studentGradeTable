@@ -14,6 +14,9 @@ var $nameEl = null;
 var $courseEl = null;
 var $gradeEl = null;
 
+//variable to hold unfiltered DOM
+var unfiltered;
+
 //Document ready
 $(document).ready(function(){
     //Listen for the document to load and reset the data to the initial state
@@ -79,8 +82,6 @@ $(document).ready(function(){
     $courseEl = $("#course");
     $gradeEl = $("#studentGrade");
 
-    //TODO: only show matching first letters
-    //TODO: limit fields shown to 10 items
     //Auto-Complete Student Name & Course Field
     $($nameEl).autocomplete({
         source: function (request, response){
@@ -107,7 +108,6 @@ $(document).ready(function(){
         minLength: 2 //two letters needed before autocomplete menu shown
     });
 
-
     $("#filterInput").autocomplete({
         source: function(request, response){
             //return source values that match input value from beginning
@@ -129,15 +129,19 @@ $(document).ready(function(){
             .append( "<a>" + item.label + "<br>" + item.description + "</a>" )
             .appendTo( ul );
     };
-
     $("#filter").on("click", function(){
-        console.log("filtered");
-        //TODO: make filterDOM function to display the value entered in the #filterInput input
+        unfiltered = $("tbody>tr").detach();
+        var val = $("#filterInput").val();
+        filterDOM(val);
+    });
+    //clear filter and re-append student data
+    $(".input-group-btn").on("click", "#clearFilter", function(){
+        $("tbody>tr").remove();
+        $("tbody").append(unfiltered);
+        $("#clearFilter").remove();
     });
 
-
 }); //END doc ready function
-
 
 
 /**
@@ -721,6 +725,44 @@ function ascendingSort(field){
     }
     //highlight the students with top and low grades
     highlightMinMaxStudent();
+}
+
+
+function filterDOM(value){
+    //TODO: what if the user doesn't use the autocomplete dropdown
+    //split the filter string
+    var split = value.split(": ");
+    //the name of the field to sort
+    var filterField = split[0];
+    //the string to sort by
+    var filterName = split[1];
+    switch(filterField){
+        case "Student Name":
+            for(var k = 0; k < studentArray.length; k++){
+                var name = new RegExp(studentArray[k].name, 'i');
+                if(filterName.match(name)){
+                    addStudentToDOM(studentArray[k]);
+                }
+            }
+            break;
+        case "Course Name":
+            for(var j = 0; j < studentArray.length; j++){
+                var course = new RegExp(studentArray[j].course, 'i');
+                if(filterName.match(course)){
+                    addStudentToDOM(studentArray[j]);
+                }
+            }
+            break;
+        default:
+            //sort field not found
+    }
+    var $clearFilter = $("<button>",{
+        "class": "btn btn-default",
+        type: "button",
+        id: "clearFilter",
+        text: "Clear Filter"
+        });
+    $(".input-group-btn").append($clearFilter);
 }
 
 /**
