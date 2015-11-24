@@ -53,6 +53,9 @@ $(document).ready(function(){
         //remove style created by failed ajax call
         $("#dataFail").remove();
         $(".student-list-container").remove("p");
+        //clear any sorting indicators
+        $("th").removeAttr("style")
+            .children().removeAttr("style");
         //TODO: turn off click handler until ajax call complete
         loadStudentAjaxCall();
     }); // end .btn-primary click handler
@@ -150,6 +153,9 @@ $(document).ready(function(){
         }else{
             filterDOM(filterVal, filterGroup);
         }
+        //clear any sorting indicators
+        $("th").removeAttr("style")
+            .children().removeAttr("style");
     });
 
     //clear filter and re-append student data
@@ -159,6 +165,11 @@ $(document).ready(function(){
         $("#filterGroup").text("");
         $("#filterInput").val("");
         $("#clearFilter").remove();
+        //clear any sorting indicators
+        $("th").removeAttr("style")
+            .children().removeAttr("style");
+        //recalculate and display average
+        calculateAverage(studentArray);
     });
 
 }); //END doc ready function
@@ -200,7 +211,6 @@ function loadStudentAjaxCall(){
                     dataArr[i].course = dataArr[i].course.trim();
                     addStudent(dataArr[i]);
                 }
-                highlightMinMaxStudent();
 
             }else{
                 $(".loading").remove();
@@ -243,7 +253,7 @@ function deleteStudentAjaxCall(object, element){
                         studentArray.splice(i, 1);
                         $(element).parents("tr").remove();
                         //calculate the new average
-                        calculateAverage();
+                        calculateAverage(studentArray);
                         return studentArray; //stop function when correct student is found
                     }
                 }
@@ -298,10 +308,10 @@ function addStudent(object) {
         addStudentToDOM(object);
 
         //calculate & update grade average
-        calculateAverage();
+        calculateAverage(studentArray);
 
         //highlight the students with top and low grades
-        highlightMinMaxStudent();
+        findMinMaxStudent(studentArray);
 
         //clear input form
         clearAddStudentForm();
@@ -337,10 +347,10 @@ function addStudent(object) {
                     addStudentToDOM(object);
 
                     //calculate & update grade average
-                    calculateAverage();
+                    calculateAverage(studentArray);
 
                     //highlight the students with top and low grades
-                    highlightMinMaxStudent();
+                    findMinMaxStudent(studentArray);
 
                     //clear input form
                     clearAddStudentForm();
@@ -528,21 +538,21 @@ function clearAddStudentForm() {
 /**
  * calculateAverage - loop through the global student array and calculate average grade and return that value
  */
-function calculateAverage(){
+function calculateAverage(array){
     var gradeSum = null;
     //check for values in array
-    if (studentArray.length <= 0){
+    if (array.length <= 0){
         //display grade Avg on screen
         $(".avgGrade").text("0");
         return;
     }
 
     //add up all student grades
-    for(var i = 0; i < studentArray.length; i++){
-        gradeSum += studentArray[i].grade;
+    for(var i = 0; i < array.length; i++){
+        gradeSum += array[i].grade;
     }
     //calculate average
-    var gradeAvg = Math.round(gradeSum/studentArray.length);
+    var gradeAvg = Math.round(gradeSum/array.length);
 
     //display grade Avg on screen
     $(".avgGrade").text(gradeAvg);
@@ -552,22 +562,25 @@ function calculateAverage(){
  * Iterate through the studentArray and find the students with the maximum and minimum grades
  * Highlight the students in the DOM
  */
-function highlightMinMaxStudent(){
+function findMinMaxStudent(array) {
     //remove previous highlighting
     $("tr").removeAttr("style");
     //Set the min & max to the grade value of the first index in array
-    var min = studentArray[0].grade;
-    var max = studentArray[0].grade;
+    var min = array[0].grade;
+    var max = array[0].grade;
     //iterate through array and find the min & max grade value
-    for(var i = 1; i < studentArray.length; i++){
-        if(studentArray[i].grade > max){
-            max = studentArray[i].grade;
+    for (var i = 1; i < array.length; i++) {
+        if (array[i].grade > max) {
+            max = array[i].grade;
         }
-        if(studentArray[i].grade < min){
-            min = studentArray[i].grade;
+        if (array[i].grade < min) {
+            min = array[i].grade;
         }
     }
+    highlightMinMaxStudent(min, max)
+}
 
+function highlightMinMaxStudent(minimum, maximum){
     //highlight the rows with a grade that matches the min or max
     //grades stored in the 3rd column
     var gradeCells = $("td:nth-child(3)");
@@ -575,9 +588,9 @@ function highlightMinMaxStudent(){
         //check the value of each grade cell
         var $currentCell = $(gradeCells)[j];
         var gradeValue = $($currentCell).text();
-        if(gradeValue == max){
+        if(gradeValue == maximum){
             $($currentCell).parent().css("background-color", "#b3ffb3"); //green
-        } else if (gradeValue == min) {
+        } else if (gradeValue == minimum) {
             $($currentCell).parent().css("background-color", "#ffd9b3"); //orange
         }
     }
@@ -690,7 +703,7 @@ function descendingSort(field){
     }
 
     //highlight the students with top and low grades
-    highlightMinMaxStudent();
+    findMinMaxStudent(sortedArray);
 }
 
 /**
@@ -755,7 +768,7 @@ function ascendingSort(field){
         addStudentToDOM(sortedArray[i]);
     }
     //highlight the students with top and low grades
-    highlightMinMaxStudent();
+    findMinMaxStudent(sortedArray);
 }
 
 /**
@@ -765,6 +778,7 @@ function ascendingSort(field){
  * @param group (optional)
  */
 function filterDOM(value, group){
+    var filteredArray = [];
     var filterField = group;
     var filterName = value;
     switch (filterField) {
@@ -773,6 +787,7 @@ function filterDOM(value, group){
                 var name = new RegExp(studentArray[k].name, 'i');
                 if (filterName.match(name)) {
                     addStudentToDOM(studentArray[k]);
+                    filteredArray.push(studentArray[k]);
                 }
             }
             break;
@@ -781,6 +796,7 @@ function filterDOM(value, group){
                 var course = new RegExp(studentArray[j].course, 'i');
                 if (filterName.match(course)) {
                     addStudentToDOM(studentArray[j]);
+                    filteredArray.push(studentArray[j]);
                 }
             }
             break;
@@ -793,11 +809,13 @@ function filterDOM(value, group){
                 var name = studentArray[x].name;
                 if (name.match(filterName)) {
                     addStudentToDOM(studentArray[x]);
+                    filteredArray.push(studentArray[x]);
                 }
                 //find matches in Courses
                 var course = studentArray[x].course;
                 if (course.match(filterName)) {
                     addStudentToDOM(studentArray[x]);
+                    filteredArray.push(studentArray[x]);
                 }
             }
     }
@@ -809,6 +827,12 @@ function filterDOM(value, group){
         text: "Clear Filter"
         });
     $(".input-group-btn").append($clearFilter);
+
+    //update the highlighted students
+    findMinMaxStudent(filteredArray);
+
+    //update and display the average
+    calculateAverage(filteredArray);
 }
 
 /**
