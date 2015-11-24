@@ -25,7 +25,6 @@ $(document).ready(function(){
     //Request student data from LearningFuze SGT API
     loadStudentAjaxCall();
 
-
     //Add clicked - Event Handler when user clicks the add button
     $(".btn-success").click(function(){
         $(".student-list-container").remove("p");
@@ -107,7 +106,7 @@ $(document).ready(function(){
         autoFocus: false,
         minLength: 2 //two letters needed before autocomplete menu shown
     });
-
+    //Auto-Complete for filtering
     $("#filterInput").autocomplete({
         source: function(request, response){
             //return source values that match input value from beginning
@@ -125,7 +124,8 @@ $(document).ready(function(){
             $("#filterGroup").text(ui.item.description);
             return false;
         }
-    }).autocomplete( "instance" )._renderItem = function( ul, item ) { //add description to label displayed
+    }).autocomplete( "instance" )._renderItem = function( ul, item ) {
+    //add description to label displayed in autocomplete dropdown
         return $( "<li>" )
             .append( "<a>" + item.label + "<br>" + item.description + "</a>" )
             .appendTo( ul );
@@ -787,8 +787,7 @@ function filterDOM(value, group){
         default:
             //no filter field found, filter both name & course columns by value passed in filterName
             //value only has to match beginning of word
-            filterName = "\\b"+filterName;
-            filterName = new RegExp(filterName, "i");
+            filterName = new RegExp("^" + filterName, "i");
             for (var x = 0; x < studentArray.length; x++){
                 //find matches in Student Names
                 var name = studentArray[x].name;
