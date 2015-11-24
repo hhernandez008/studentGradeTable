@@ -120,25 +120,43 @@ $(document).ready(function(){
         minLength: 1,
         select: function(event, ui){
             //insert the objects value into the input box, not its label
-            $("#filterInput").val(ui.item.description + ": " + ui.item.value);
+            $("#filterInput").val(ui.item.value);
+            //place the description next to the filter icon
+            $("#filterGroup").text(ui.item.description);
             return false;
         }
-    })
-        .autocomplete( "instance" )._renderItem = function( ul, item ) {
+    }).autocomplete( "instance" )._renderItem = function( ul, item ) { //add description to label displayed
         return $( "<li>" )
             .append( "<a>" + item.label + "<br>" + item.description + "</a>" )
             .appendTo( ul );
     };
+
+    //filter the student grade table to the input entered
     $("#filter").on("click", function(){
-        //TODO: if filter input empty DON'T filter
+        //remove clear filter button if existing
+        $("#clearFilter").remove();
+        //find the value to filter by and the column to look for the filter in
+        var filterVal = $("#filterInput").val();
+        var filterGroup = $("#filterGroup").text();
+        if(filterVal == ""){
+            // User must enter input before filtering
+            return;
+        }
+        //remove student table data from DOM and save for reattachment later
         unfiltered = $("tbody>tr").detach();
-        var val = $("#filterInput").val();
-        filterDOM(val);
+        //determine if there is a filter group to pass to filterDOM function
+        if(filterGroup == ""){
+            filterDOM(filterVal);
+        }else{
+            filterDOM(filterVal, filterGroup);
+        }
     });
+
     //clear filter and re-append student data
     $(".input-group-btn").on("click", "#clearFilter", function(){
         $("tbody>tr").remove();
         $("tbody").append(unfiltered);
+        $("#filterGroup").text("");
         $("#filterInput").val("");
         $("#clearFilter").remove();
     });
@@ -389,8 +407,6 @@ function addObjectToFilters(object){
     var nameUpper = object.name.toUpperCase();
     var courseUpper =  object.course.toUpperCase();
 
-    //TODO: add object to arrays only once IGNORE CASE
-    //TODO: try match with for loop
     //add the student name and course to the autocomplete arrays n
     if(studentNamesAuto.indexOf(object.name) == -1){
         studentNamesAuto.push(object.name);
@@ -598,19 +614,16 @@ function sort(element){
         $($firstChild).css("display", "inline-block");
         $($firstChild).next().toggle();
         ascendingSort(sortField);
-        console.log("undefined");
     }else if(firstChildStyle == "display: none;") {
         //up arrow to display
         $($firstChild).toggle();
         $($firstChild).next().toggle();
         ascendingSort(sortField);
-        console.log("none");
     } else {
         //down arrow to display
         $($firstChild).toggle();
         $($firstChild).next().toggle();
         descendingSort(sortField);
-        console.log("else");
     }
 }
 
@@ -745,35 +758,51 @@ function ascendingSort(field){
     highlightMinMaxStudent();
 }
 
-
-function filterDOM(value){
-    //TODO: what if the user doesn't use the autocomplete dropdown
-    //split the filter string
-    var split = value.split(": ");
-    //the name of the field to sort
-    var filterField = split[0];
-    //the string to sort by
-    var filterName = split[1];
-    switch(filterField){
+/**
+ * Filter the rows displayed in Student Grade Table to those that match the passed in
+ * value and column group
+ * @param value
+ * @param group (optional)
+ */
+function filterDOM(value, group){
+    var filterField = group;
+    var filterName = value;
+    switch (filterField) {
         case "Student Name":
-            for(var k = 0; k < studentArray.length; k++){
+            for (var k = 0; k < studentArray.length; k++) {
                 var name = new RegExp(studentArray[k].name, 'i');
-                if(filterName.match(name)){
+                if (filterName.match(name)) {
                     addStudentToDOM(studentArray[k]);
                 }
             }
             break;
         case "Course Name":
-            for(var j = 0; j < studentArray.length; j++){
+            for (var j = 0; j < studentArray.length; j++) {
                 var course = new RegExp(studentArray[j].course, 'i');
-                if(filterName.match(course)){
+                if (filterName.match(course)) {
                     addStudentToDOM(studentArray[j]);
                 }
             }
             break;
         default:
-            //sort field not found
+            //no filter field found, filter both name & course columns by value passed in filterName
+            //value only has to match beginning of word
+            filterName = "\\b"+filterName;
+            filterName = new RegExp(filterName, "i");
+            for (var x = 0; x < studentArray.length; x++){
+                //find matches in Student Names
+                var name = studentArray[x].name;
+                if (name.match(filterName)) {
+                    addStudentToDOM(studentArray[x]);
+                }
+                //find matches in Courses
+                var course = studentArray[x].course;
+                if (course.match(filterName)) {
+                    addStudentToDOM(studentArray[x]);
+                }
+            }
     }
+    //add a clear filter button to dom
     var $clearFilter = $("<button>",{
         "class": "btn btn-default",
         type: "button",

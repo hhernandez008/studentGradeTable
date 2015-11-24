@@ -99,9 +99,13 @@
                 <div class="input-group">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-filter"> </span>
+                            <!-- Display the group/column the table will filter within -->
+                            <span id="filterGroup"></span>
                         </span>
+
                     <input type="text" class="form-control" name="studentGrade" id="filterInput"
-                            placeholder="Filter Courses">
+                            placeholder="Filter by Name or Course">
+
                     <span class="input-group-btn">
                         <button class="btn btn-primary" type="button" id="filter">Filter</button>
                     </span>
