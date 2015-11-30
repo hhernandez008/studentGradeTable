@@ -4,10 +4,15 @@
     <meta name="viewport" content="initial-scale=1, user-scalable=no">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-    <script src="script.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
+
+    <script src="ang.js"></script>
 
     <style>
         .ui-autocomplete {
@@ -93,26 +98,6 @@
         </div>
         <!-- end .student-add-form -->
         <!-- View Student Data -->
-        <!-- Filter data shown -->
-        <div class="filter col-xs-12 col-md-9 col-md-pull-3">
-            <div class="form-group">
-                <div class="input-group">
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-filter"> </span>
-                            <!-- Display the group/column the table will filter within -->
-                            <span id="filterGroup"></span>
-                        </span>
-
-                    <input type="text" class="form-control" name="studentGrade" id="filterInput"
-                            placeholder="Filter by Name or Course">
-
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary" type="button" id="filter">Filter</button>
-                    </span>
-
-                </div>
-            </div>
-        </div>
         <!-- Full on mobile, align left on desktop -->
         <div class="student-list-container col-xs-12 col-md-9 col-md-pull-3">
             <table class="student-list table">
