@@ -1,6 +1,23 @@
-var app = angular.module("sgtApp", []);
+var sgtApp = angular.module("sgtApp", []);
 
-app.controller("appController", function($scope){
+sgtApp.factory("studentService", function($http){
+    //API key for learningfuze database
+    var apiKey = "JhpapQQx34";
+
+    var ajaxCall = function(dataObject, action){
+        $http({
+            data: dataObject,
+            method: "post",
+            url: "http://s-apis.learningfuze.com/sgt/" + action
+        })
+    };
+
+    return {
+        ajaxCall: ajaxCall(dataObject, action)
+    };
+});
+
+sgtApp.controller("appController", function($scope, studentService){
     //Handles Student Loading from API
 
     //adding students to dom
@@ -23,7 +40,7 @@ app.controller("appController", function($scope){
     };
 });
 
-app.controller("formController", function($scope){
+sgtApp.controller("formController", function($scope, studentService){
     //Handles inputs & validation thru angular
     //add new student to array after successful ajax call, error handling
     this.newStudent = {};
@@ -38,7 +55,7 @@ app.controller("formController", function($scope){
     //auto-complete for name & course
 });
 
-app.controller("studentListController", function($scope){
+sgtApp.controller("studentListController", function($scope, studentService){
     //handle student delete & errors
     this.deleteStudent = function(num){
         //ajax call to delete student on success delete student
