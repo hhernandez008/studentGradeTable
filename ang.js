@@ -1,48 +1,11 @@
 var sgtApp = angular.module("sgtApp", []);
 
-sgtApp.factory("studentService", function($http){
-    var key = "JhpapQQx34";
-     var ajaxCall = function(dataObject, action){
-         console.log(dataObject);
-         var url = "http://s-apis.learningfuze.com/sgt/" + action;
-         return $http.post(url, dataObject);
-     };
-
-    return {
-        getStudents: function(){
-            var obj = {api_key: key};
-            return ajaxCall(obj, "get");
-        },
-        addNewStudents: function(student){
-            var obj = {
-                api_key: key,
-                name: student.name,
-                course: student.course,
-                grade: student.grade
-            };
-            return ajaxCall(obj, "create");
-        },
-        deleteStudents: function(id){
-            var obj = {
-                api_key: key,
-                student_id: id
-            };
-            return ajaxCall(obj, "delete");
-        }
-    };
-});
-
 sgtApp.controller("appController", function($scope, studentService){
-    //Student Loading from API
+    this.key = "JhpapQQx34";
     $scope.studentArray = [];
 
     this.reloadStudents = function(){
-        studentService.getStudents()
-            .then(function successCallback(response){
-                console.log(response);
-            }, function errorCallback(response){
-                console.log("error");
-            });
+        this.loadStudentsAjax();
     };
 
     this.calculateAverage = function(){
@@ -54,6 +17,63 @@ sgtApp.controller("appController", function($scope, studentService){
         //return grade average
         return Math.round(gradeSum/gradeQuantity);
     };
+
+    this.loadStudentsAjax = function(){
+        /*//add loading image when student data is loading or reloading
+        var $loading = $("<img>",{
+            src: "images/loading.gif"
+        });
+        var $tcell = $("<td>", {
+            colspan: "4",
+            style: "text-align: center"
+        }).append($loading);
+        var $row = $("<tr>",{
+            class: "loading"
+        }).append($tcell);
+        $("tbody").prepend($row);*/
+
+        //ajax call to load students
+        $.ajax({
+            dataType: "json",
+            data: {api_key: this.key},
+            method: "post",
+            url: "http://s-apis.learningfuze.com/sgt/get",
+            success: function(result) {
+                var dataArr = result.data;
+                if(result.success){
+                    //clear DOM
+                    $(".loading").remove();
+                    $("tbody>tr").remove();
+                    //add student data from server
+                    for(var i = 0; i < dataArr.length; i++){
+                        //remove any excess whitespace before storing & adding to DOM
+                        dataArr[i].name = dataArr[i].name.trim();
+                        dataArr[i].course = dataArr[i].course.trim();
+                        addStudent(dataArr[i]);
+                    }
+
+                }else{
+                    $(".loading").remove();
+                    var $errorMessage = $("<p>", {
+                        id: 'dataFail',
+                        style: 'color:red; font-weight: bold; font-size: 1.25em; text-align: center'
+                    }).text("Student Data Failed to Load | Please Try Again Later");
+                    //indicate failed attempt after buttons
+                    $(".student-list-container").prepend($errorMessage);
+
+                }
+            }, //end success function
+            error: function(){
+                $(".loading").remove();
+                var $errorMessage = $("<p>", {
+                    id: 'dataFail',
+                    style: 'color:red; font-weight: bold; font-size: 1.25em; text-align: center'
+                }).text("Student Data Failed to Load | Please Try Again Later");
+                //indicate failed attempt after buttons
+                $(".student-list-container").prepend($errorMessage);
+            }
+        }); //end ajax call
+    }
 });
 
 sgtApp.controller("formController", function($scope, studentService){
