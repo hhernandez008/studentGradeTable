@@ -53,16 +53,16 @@ sgtApp.controller("appController", function($scope){
                     //show error message
                     self.loadError = true;
                 }
-                //run digest of $scope service
-                $scope.$digest();
+                //run apply of $scope service
+                $scope.$apply();
             }, //end success function
             error: function(){
                 //remove loading gif
                 self.loading = false;
                 //show error message
                 self.loadError = true;
-                //run digest of $scope service
-                $scope.$digest();
+                //run apply of $scope service
+                $scope.$apply();
             }
         }); //end ajax call
     }; //end loadStudentsAjax
@@ -110,14 +110,15 @@ sgtApp.controller("formController", function($scope){
                 } else {
                     self.addStudentError = true;
                 }
-                // clearing the newStudent object but not looping through the studentArray
-                $scope.$digest();
+                // $scope.$digest() cleared the newStudent object, but did not call the ng-repeat on the studentArray
+                $scope.$apply();
             }, //end success function
             error: function () {
                 self.addStudentError = true;
-                $scope.$digest();
+                $scope.$apply();
             }
-        });
+        })
+
     };
 });
 
@@ -143,12 +144,12 @@ sgtApp.controller("studentListController", function($scope){
                     $scope.studentArray[index].deleteError = true;
                     $scope.studentArray[index].deleteErrorMessage = "You are not authorized to delete this student.";
                 }
-                $scope.$digest();
+                $scope.$apply();
             }, //end success function
             error: function(){
                 $scope.studentArray[index].deleteError = true;
                 $scope.studentArray[index].deleteErrorMessage = "You are not authorized to delete this student.";
-                $scope.$digest();
+                $scope.$apply();
             }
         }); //end ajax call
     };
