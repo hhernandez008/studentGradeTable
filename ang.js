@@ -1,16 +1,21 @@
 var sgtApp = angular.module("sgtApp", []);
 
-sgtApp.factory("studentService", function($http){
+sgtApp.config(['$httpProvider', function ($httpProvider) {
+    //Reset headers to avoid OPTIONS request (aka preflight)
+    $httpProvider.defaults.headers.post = {};
+}]);
+
+/*sgtApp.factory("studentService", function($http){
     var key = "JhpapQQx34";
      var ajaxCall = function(dataObject, action){
-         console.log(dataObject);
          var url = "http://s-apis.learningfuze.com/sgt/" + action;
          return $http.post(url, dataObject);
      };
 
     return {
         getStudents: function(){
-            var obj = {api_key: key};
+            var obj = {api_key: "JhpapQQx34"};
+            console.log("obj", obj);
             return ajaxCall(obj, "get");
         },
         addNewStudents: function(student){
@@ -30,14 +35,19 @@ sgtApp.factory("studentService", function($http){
             return ajaxCall(obj, "delete");
         }
     };
-});
+});*/
 
-sgtApp.controller("appController", function($scope, studentService){
+sgtApp.controller("appController", function($scope, $http){
     //Student Loading from API
     $scope.studentArray = [];
 
     this.reloadStudents = function(){
-        studentService.getStudents()
+        $http({
+            method: "post",
+            data: {api_key: "JhpapQQx34"},
+            url: "http://s-apis.learningfuze.com/sgt/get"
+
+        })
             .then(function successCallback(response){
                 console.log(response);
             }, function errorCallback(response){
@@ -56,7 +66,7 @@ sgtApp.controller("appController", function($scope, studentService){
     };
 });
 
-sgtApp.controller("formController", function($scope, studentService){
+sgtApp.controller("formController", function($scope){
     //Handles inputs & validation thru angular
     //add new student to array after successful ajax call, error handling
     this.newStudent = {};
@@ -71,7 +81,7 @@ sgtApp.controller("formController", function($scope, studentService){
     //auto-complete for name & course
 });
 
-sgtApp.controller("studentListController", function($scope, studentService){
+sgtApp.controller("studentListController", function($scope){
     //handle student delete & errors
     this.deleteStudent = function(num){
         //ajax call to delete student on success delete student
