@@ -5,6 +5,7 @@ sgtApp.controller("appController", function($scope){
     $scope.key = "JhpapQQx34";
     self.loadError = false;
     $scope.studentArray = [];
+    self.loading = false;
 
     self.reloadStudents = function(){
         self.loadStudentsAjax();
@@ -21,19 +22,8 @@ sgtApp.controller("appController", function($scope){
     };
 
     self.loadStudentsAjax = function(){
-       //load using angular on DOM
-       /* //add loading image when student data is loading or reloading
-        var $loading = $("<img>",{
-            src: "images/loading.gif"
-        });
-        var $tcell = $("<td>", {
-            colspan: "4",
-            style: "text-align: center"
-        }).append($loading);
-        var $row = $("<tr>",{
-            class: "loading"
-        }).append($tcell);
-        $("tbody").prepend($row);*/
+        //show loading gif
+        self.loading = true;
 
         //ajax call to load students
         $.ajax({
@@ -44,6 +34,8 @@ sgtApp.controller("appController", function($scope){
             success: function(result) {
                 var dataArr = result.data;
                 if(result.success){
+                    //remove loading gif
+                    self.loading = false;
                     //clear DOM
                     $(".loading").remove();
                     //empty array before loading data
@@ -53,18 +45,23 @@ sgtApp.controller("appController", function($scope){
                         //remove any excess whitespace before storing & adding to DOM
                         dataArr[i].name = dataArr[i].name.trim();
                         dataArr[i].course = dataArr[i].course.trim();
+                        dataArr[i].deleteError = false;
                         //add student to array; object properties: id(num), name(string), grade(num), course(string)
-                        $scope.studentArray.push(dataArr[i]);
+                        $scope.studentArray.unshift(dataArr[i]);
                     }
                 }else {
-                    $(".loading").remove();
+                    //remove loading gif
+                    self.loading = false;
+                    //show error message
                     self.loadError = true;
                 }
                 //run digest of $scope service
                 $scope.$digest();
             }, //end success function
             error: function(){
-                $(".loading").remove();
+                //remove loading gif
+                self.loading = false;
+                //show error message
                 self.loadError = true;
                 //run digest of $scope service
                 $scope.$digest();
@@ -88,7 +85,6 @@ sgtApp.controller("formController", function($scope){
         //verify valid inputs
         //insert newStudent at the start of the array
         self.addStudentAjaxCall();
-
     };
 
     self.addStudentAjaxCall = function() {
@@ -98,8 +94,7 @@ sgtApp.controller("formController", function($scope){
                 api_key: $scope.key,
                 name: self.newStudent.name,
                 course: self.newStudent.course,
-                grade: self.newStudent.grade,
-                "force-failure": "server"
+                grade: self.newStudent.grade
             },
             method: "post",
             url: "http://s-apis.learningfuze.com/sgt/create",
@@ -107,7 +102,7 @@ sgtApp.controller("formController", function($scope){
             success: function (response) {
                 if (response.success) {
                     self.newStudent.id = response.new_id;
-
+                    self.deleteError = false;
                     //place object in studentArray
                     $scope.studentArray.unshift(self.newStudent);
 
@@ -146,20 +141,15 @@ sgtApp.controller("studentListController", function($scope){
                 if(result.success) {
                     $scope.studentArray.splice(index, 1);
                 }else{
-                    /*var $errorMessage = $("<p>", {
-                        style: "color: #f0ad4e; font-weight: bold",
-                        text:"You are not authorized to delete this student."
-                    });
-                    $(element).after($errorMessage);*/
+                    $scope.studentArray[index].deleteError = true;
+                    $scope.studentArray[index].deleteErrorMessage = "You are not authorized to delete this student.";
                 }
                 $scope.$digest();
             }, //end success function
             error: function(){
-                /*var $errorMessage = $("<p>", {
-                    style: "color: #f0ad4e; font-weight: bold",
-                    text: "Unable to delete this student from server. Try again later"
-                });
-                $(element).after($errorMessage);*/
+                $scope.studentArray[index].deleteError = true;
+                $scope.studentArray[index].deleteErrorMessage = "You are not authorized to delete this student.";
+                $scope.$digest();
             }
         }); //end ajax call
     };

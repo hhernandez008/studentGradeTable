@@ -137,6 +137,11 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr ng-show="ac.loading">
+                        <td colspan="4" style="text-align: center;">
+                            <img src="images/loading.gif">
+                        </td>
+                    </tr>
                     <tr ng-repeat="student in studentArray">
                         <td>{{student.name}}</td>
                         <td>{{student.course}}</td>
@@ -144,6 +149,9 @@
                         <td>
                             <button type="button" class="btn btn-danger"
                                     ng-click="slc.deleteStudent($index)">Delete</button>
+                            <p style="width: 150px; font-weight: bold" class="text-danger"
+                                    ng-show="student.deleteError">{{student
+                            .deleteErrorMessage}}</p>
                         </td>
                     </tr>
                 </tbody>
