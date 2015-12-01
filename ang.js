@@ -1,14 +1,16 @@
 var sgtApp = angular.module("sgtApp", []);
 
-sgtApp.controller("appController", function($scope, studentService){
-    this.key = "JhpapQQx34";
+sgtApp.controller("appController", function($scope){
+    var self = this;
+    self.key = "JhpapQQx34";
+    self.loadError = false;
     $scope.studentArray = [];
 
-    this.reloadStudents = function(){
-        this.loadStudentsAjax();
+    self.reloadStudents = function(){
+        self.loadStudentsAjax();
     };
 
-    this.calculateAverage = function(){
+    self.calculateAverage = function(){
         var gradeQuantity = $scope.studentArray.length;
         var gradeSum = null;
         for(var i = 0; i < gradeQuantity; i++){
@@ -18,8 +20,8 @@ sgtApp.controller("appController", function($scope, studentService){
         return Math.round(gradeSum/gradeQuantity);
     };
 
-    this.loadStudentsAjax = function(){
-        /*//add loading image when student data is loading or reloading
+    self.loadStudentsAjax = function(){
+        //add loading image when student data is loading or reloading
         var $loading = $("<img>",{
             src: "images/loading.gif"
         });
@@ -30,7 +32,7 @@ sgtApp.controller("appController", function($scope, studentService){
         var $row = $("<tr>",{
             class: "loading"
         }).append($tcell);
-        $("tbody").prepend($row);*/
+        $("tbody").prepend($row);
 
         //ajax call to load students
         $.ajax({
@@ -43,40 +45,33 @@ sgtApp.controller("appController", function($scope, studentService){
                 if(result.success){
                     //clear DOM
                     $(".loading").remove();
-                    $("tbody>tr").remove();
+
                     //add student data from server
                     for(var i = 0; i < dataArr.length; i++){
                         //remove any excess whitespace before storing & adding to DOM
                         dataArr[i].name = dataArr[i].name.trim();
                         dataArr[i].course = dataArr[i].course.trim();
-                        addStudent(dataArr[i]);
+                        dataArr[i].grade = parseInt(dataArr[i].grade);
+                        //add student to array
+                        $scope.studentArray.push(dataArr[i]);
                     }
 
-                }else{
+                }else {
                     $(".loading").remove();
-                    var $errorMessage = $("<p>", {
-                        id: 'dataFail',
-                        style: 'color:red; font-weight: bold; font-size: 1.25em; text-align: center'
-                    }).text("Student Data Failed to Load | Please Try Again Later");
-                    //indicate failed attempt after buttons
-                    $(".student-list-container").prepend($errorMessage);
-
+                    self.loadError = true;
                 }
+                //run digest of $scope service
+                $scope.$digest();
             }, //end success function
             error: function(){
                 $(".loading").remove();
-                var $errorMessage = $("<p>", {
-                    id: 'dataFail',
-                    style: 'color:red; font-weight: bold; font-size: 1.25em; text-align: center'
-                }).text("Student Data Failed to Load | Please Try Again Later");
-                //indicate failed attempt after buttons
-                $(".student-list-container").prepend($errorMessage);
+                self.loadError = true;
             }
         }); //end ajax call
     }
 });
 
-sgtApp.controller("formController", function($scope, studentService){
+sgtApp.controller("formController", function($scope){
     //Handles inputs & validation thru angular
     //add new student to array after successful ajax call, error handling
     this.newStudent = {};
@@ -91,7 +86,7 @@ sgtApp.controller("formController", function($scope, studentService){
     //auto-complete for name & course
 });
 
-sgtApp.controller("studentListController", function($scope, studentService){
+sgtApp.controller("studentListController", function($scope){
     //handle student delete & errors
     this.deleteStudent = function(num){
         //ajax call to delete student on success delete student

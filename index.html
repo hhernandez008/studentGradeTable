@@ -89,7 +89,7 @@
                 </div>
             </div>
             <!-- Submit Buttons -->
-            <button type="button" class="btn btn-success" ng-click="fc.addStudent()">
+            <button type="button" class="btn btn-success" ng-click="addStudent()">
                 Add
             </button>
             <button type="button" class="btn btn-default"
@@ -105,6 +105,9 @@
         <!-- View Student Data -->
         <!-- Full on mobile, align left on desktop -->
         <div class="col-xs-12 col-md-9 col-md-pull-3">
+            <p class="text-danger" style="font-weight: bold; text-align: center" ng-show="loadError">
+                Student Data Failed to Load | Please Try Later
+            </p>
             <table class="table" ng-controller="studentListController as slc">
                 <thead>
                     <tr>
