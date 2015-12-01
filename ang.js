@@ -1,33 +1,49 @@
 var sgtApp = angular.module("sgtApp", []);
 
 sgtApp.factory("studentService", function($http){
-    //API key for learningfuze database
-    var apiKey = "JhpapQQx34";
-
-    var ajaxCall = function(dataObject, action){
-        $http({
-            data: dataObject,
-            method: "post",
-            url: "http://s-apis.learningfuze.com/sgt/" + action
-        })
-    };
+    var key = "JhpapQQx34";
+     var ajaxCall = function(dataObject, action){
+         console.log(dataObject);
+         var url = "http://s-apis.learningfuze.com/sgt/" + action;
+         return $http.post(url, dataObject);
+     };
 
     return {
-        ajaxCall: ajaxCall(dataObject, action)
+        getStudents: function(){
+            var obj = {api_key: key};
+            return ajaxCall(obj, "get");
+        },
+        addNewStudents: function(student){
+            var obj = {
+                api_key: key,
+                name: student.name,
+                course: student.course,
+                grade: student.grade
+            };
+            return ajaxCall(obj, "create");
+        },
+        deleteStudents: function(id){
+            var obj = {
+                api_key: key,
+                student_id: id
+            };
+            return ajaxCall(obj, "delete");
+        }
     };
 });
 
 sgtApp.controller("appController", function($scope, studentService){
-    //Handles Student Loading from API
+    //Student Loading from API
+    $scope.studentArray = [];
 
-    //adding students to dom
-    $scope.studentArray = [
-        //DUMMY DATA
-        {name: "Heather", course: "Math", grade: 98},
-        {name: "Andrew", course: "Math", grade: 100},
-        {name: "Nick", course: "Math", grade: 89},
-        {name: "Tanner", course: "Math", grade: 74}
-    ];
+    this.reloadStudents = function(){
+        studentService.getStudents()
+            .then(function successCallback(response){
+                console.log(response);
+            }, function errorCallback(response){
+                console.log("error");
+            });
+    };
 
     this.calculateAverage = function(){
         var gradeQuantity = $scope.studentArray.length;
