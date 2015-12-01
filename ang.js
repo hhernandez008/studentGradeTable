@@ -36,8 +36,6 @@ sgtApp.controller("appController", function($scope){
                 if(result.success){
                     //remove loading gif
                     self.loading = false;
-                    //clear DOM
-                    $(".loading").remove();
                     //empty array before loading data
                     $scope.studentArray = [];
                     //add student data from server
@@ -85,6 +83,7 @@ sgtApp.controller("formController", function($scope){
         //verify valid inputs
         //insert newStudent at the start of the array
         self.addStudentAjaxCall();
+
     };
 
     self.addStudentAjaxCall = function() {
@@ -102,7 +101,7 @@ sgtApp.controller("formController", function($scope){
             success: function (response) {
                 if (response.success) {
                     self.newStudent.id = response.new_id;
-                    self.deleteError = false;
+                    self.newStudent.deleteError = false;
                     //place object in studentArray
                     $scope.studentArray.unshift(self.newStudent);
 
@@ -111,6 +110,7 @@ sgtApp.controller("formController", function($scope){
                 } else {
                     self.addStudentError = true;
                 }
+                // clearing the newStudent object but not looping through the studentArray
                 $scope.$digest();
             }, //end success function
             error: function () {
@@ -119,7 +119,6 @@ sgtApp.controller("formController", function($scope){
             }
         });
     };
-    //auto-complete for name & course
 });
 
 sgtApp.controller("studentListController", function($scope){
