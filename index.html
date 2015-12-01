@@ -89,23 +89,28 @@
                 </div>
             </div>
             <!-- Submit Buttons -->
-            <button type="button" class="btn btn-success" ng-click="addStudent()">
+            <button type="button" class="btn btn-success" ng-click="fc.addStudent()">
                 Add
             </button>
             <button type="button" class="btn btn-default"
-                    ng-click="fc.newStudent.name=''; fc.newStudent.course=''; fc.newStudent.grade='';">
+                    ng-click="fc.newStudent.name=''; fc.newStudent.course='';
+                    fc.newStudent.grade=''; fc.addStudentError = false">
                 Cancel
             </button>
             <button type="button" class="btn btn-primary" style="margin: 1%"
-                    ng-click="ac.reloadStudents()">
+                    ng-click="ac.reloadStudents(); fc.addStudentError = false">
                 Reload Student Data
             </button>
+            <p class="text-danger" style="font-weight: bold; text-align: center"
+                    ng-show="fc.addStudentError">
+                Failed to Add Student <br> Please Try Again
+            </p>
             <hr>
         </div>
         <!-- View Student Data -->
         <!-- Full on mobile, align left on desktop -->
         <div class="col-xs-12 col-md-9 col-md-pull-3">
-            <p class="text-danger" style="font-weight: bold; text-align: center" ng-show="loadError">
+            <p class="text-danger" style="font-weight: bold; text-align: center" ng-show="ac.loadError">
                 Student Data Failed to Load | Please Try Later
             </p>
             <table class="table" ng-controller="studentListController as slc">
