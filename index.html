@@ -95,16 +95,15 @@
                     Add
                 </button>
                 <button type="button" class="btn btn-default"
-                        ng-click="fc.newStudent.name=''; fc.newStudent.course='';
-                    fc.newStudent.grade=''; fc.addStudentError = false">
+                        ng-click="fc.resetForm();">
                     Cancel
                 </button>
                 <button type="button" class="btn btn-primary" style="margin: 1%"
-                        ng-click="ac.reloadStudents(); fc.addStudentError = false">
+                        ng-click="ac.reloadStudents();">
                     Reload Student Data
                 </button>
                 <p class="text-danger" style="font-weight: bold; text-align: center"
-                        ng-show="fc.addStudentError">
+                        ng-show="fc.addStudentError();">
                     Failed to Add Student <br> Please Try Again
                 </p>
                 <hr>

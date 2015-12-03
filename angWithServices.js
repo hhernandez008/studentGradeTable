@@ -76,6 +76,10 @@ sgtApp.factory("studentDataService", function ($http, $log, $q) {
         return student.addError;
     };
 
+    student.resetErrors = function(){
+        student.loadError = false;
+        student.addError = false;
+    };
     return student;
 });
 
@@ -84,6 +88,7 @@ sgtApp.controller("appController", function (studentDataService) {
     studentDataService.studentDataCall();
     //reload button clicked
     this.reloadStudents = function () {
+        studentDataService.resetErrors();
         studentDataService.studentDataCall();
     };
 
@@ -101,11 +106,16 @@ sgtApp.controller("appController", function (studentDataService) {
 
 sgtApp.controller("formController", function (studentDataService) {
     this.newStudent = {};
-    this.addStudentError = false;
+    this.addStudentError = studentDataService.addingError;
     //add student to database & update studentDataService.studentArray
     this.addStudent = function () {
+        studentDataService.resetErrors();
         studentDataService.studentAddCall(this.newStudent);
     };
+    this.resetForm = function(){
+        studentDataService.resetErrors();
+        this.newStudent = {};
+    }
 });
 
 sgtApp.controller("studentList", function (studentDataService) {
