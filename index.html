@@ -7,10 +7,11 @@
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <!-- JQuery AutoComplete plugin -->
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>-->
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
-    <script src="ang.js"></script>
+    <script src="angWithServices.js"></script>
 
     <style>
         .ui-autocomplete {
@@ -137,11 +138,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-show="ac.loading">
+                    <!--<tr ng-show="ac.loading">
                         <td colspan="4" style="text-align: center;">
                             <img src="images/loading.gif">
                         </td>
-                    </tr>
+                    </tr>-->
                     <tr ng-repeat="student in studentArray">
                         <td>{{student.name}}</td>
                         <td>{{student.course}}</td>
