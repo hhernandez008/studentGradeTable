@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app = "sgtApp">
+<html ng-app="sgtApp">
 <head>
     <meta name="viewport" content="initial-scale=1, user-scalable=no">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -24,143 +24,148 @@
 
 </head>
 <body ng-controller="appController as ac">
-<div class="container">
-    <!-- Header & Grade Average -->
-    <div class = "row">
-        <div class="page-header">
-            <!-- only show this element when it isn't on mobile -->
-            <h1 class="hidden-xs">
-                Student Grade Table
-                <small class = "pull-right">
-                    Grade Average: &nbsp;
+    <div class="container">
+        <!-- Header & Grade Average -->
+        <div class="row">
+            <div class="page-header">
+                <!-- only show this element when it isn't on mobile -->
+                <h1 class="hidden-xs">
+                    Student Grade Table
+                    <small class="pull-right">
+                        Grade Average: &nbsp;
                     <span class="label label-default pull-right">
                         {{ac.calculateAverage()}}
                     </span>
-                </small>
-            </h1>
-            <!-- only show this element when the user gets to a mobile version -->
-            <h3 class="visible-xs">
-                Student Grade Table
-                <small class = "col-xs-12 text-right">
-                    Grade Average:
+                    </small>
+                </h1>
+                <!-- only show this element when the user gets to a mobile version -->
+                <h3 class="visible-xs">
+                    Student Grade Table
+                    <small class="col-xs-12 text-right">
+                        Grade Average:
                     <span class="avgGrade label label-default">
                         {{ac.calculateAverage()}}
                     </span>
-                </small>
-            </h3>
+                    </small>
+                </h3>
+            </div>
         </div>
-    </div><!-- end .row -->
-    <div class="row">
-        <!-- Add Student Data Form -->
-        <!-- Full on mobile, align right on desktop -->
-        <div role="form" class="col-xs-12 col-md-3 col-md-push-9"
-                ng-controller="formController as fc">
-            <h4>
-                Add Student
-            </h4>
+        <!-- end .row -->
+        <div class="row">
+            <!-- Add Student Data Form -->
+            <!-- Full on mobile, align right on desktop -->
+            <div role="form" class="col-xs-12 col-md-3 col-md-push-9"
+                    ng-controller="formController as fc">
+                <h4>
+                    Add Student
+                </h4>
 
-            <!-- Name Input -->
-            <div class="form-group">
-                <div class="input-group">
+                <!-- Name Input -->
+                <div class="form-group">
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-user"> </span>
                         </span>
-                    <input type="text" class="form-control" name="studentName"
-                            placeholder="Student Name" ng-model="fc.newStudent.name">
+                        <input type="text" class="form-control" name="studentName"
+                                placeholder="Student Name" ng-model="fc.newStudent.name">
+                    </div>
                 </div>
-            </div>
-            <!-- Course Input -->
-            <div class="form-group">
-                <div class="input-group">
+                <!-- Course Input -->
+                <div class="form-group">
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-list-alt"> </span>
                         </span>
-                    <input type="text" class="form-control" name="course"
-                            placeholder="Student Course" ng-model="fc.newStudent.course">
+                        <input type="text" class="form-control" name="course"
+                                placeholder="Student Course" ng-model="fc.newStudent.course">
+                    </div>
                 </div>
-            </div>
-            <!-- Grade Input -->
-            <div class="form-group">
-                <div class="input-group">
+                <!-- Grade Input -->
+                <div class="form-group">
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-education"> </span>
                         </span>
-                    <input type="number" class="form-control" name="studentGrade"
-                            placeholder="Student Grade" ng-model="fc.newStudent.grade">
+                        <input type="number" class="form-control" name="studentGrade"
+                                placeholder="Student Grade" ng-model="fc.newStudent.grade">
+                    </div>
                 </div>
-            </div>
-            <!-- Submit Buttons -->
-            <button type="button" class="btn btn-success" ng-click="fc.addStudent()">
-                Add
-            </button>
-            <button type="button" class="btn btn-default"
-                    ng-click="fc.newStudent.name=''; fc.newStudent.course='';
+                <!-- Submit Buttons -->
+                <button type="button" class="btn btn-success" ng-click="fc.addStudent()">
+                    Add
+                </button>
+                <button type="button" class="btn btn-default"
+                        ng-click="fc.newStudent.name=''; fc.newStudent.course='';
                     fc.newStudent.grade=''; fc.addStudentError = false">
-                Cancel
-            </button>
-            <button type="button" class="btn btn-primary" style="margin: 1%"
-                    ng-click="ac.reloadStudents(); fc.addStudentError = false">
-                Reload Student Data
-            </button>
-            <p class="text-danger" style="font-weight: bold; text-align: center"
-                    ng-show="fc.addStudentError">
-                Failed to Add Student <br> Please Try Again
-            </p>
-            <hr>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-primary" style="margin: 1%"
+                        ng-click="ac.reloadStudents(); fc.addStudentError = false">
+                    Reload Student Data
+                </button>
+                <p class="text-danger" style="font-weight: bold; text-align: center"
+                        ng-show="fc.addStudentError">
+                    Failed to Add Student <br> Please Try Again
+                </p>
+                <hr>
+            </div>
+            <!-- View Student Data -->
+            <!-- Full on mobile, align left on desktop -->
+            <div class="col-xs-12 col-md-9 col-md-pull-3" ng-controller="studentList as sl">
+                <p class="text-danger" style="font-weight: bold; text-align: center" ng-show="sl.loadError()">
+                    Student Data Failed to Load | Please Try Later
+                </p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th sort="name">
+                                Student Name
+                                <span class='glyphicon glyphicon-triangle-top'></span>
+                                <span class='glyphicon glyphicon-triangle-bottom'></span>
+                            </th>
+                            <th sort="course">
+                                Student Course
+                                <span class='glyphicon glyphicon-triangle-top'></span>
+                                <span class='glyphicon glyphicon-triangle-bottom'></span>
+                            </th>
+                            <th sort="grade">
+                                Student Grade
+                                <span class='glyphicon glyphicon-triangle-top'></span>
+                                <span class='glyphicon glyphicon-triangle-bottom'></span>
+                            </th>
+                            <th>
+                                Operations
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-show="sl.studentData().length == 0">
+                            <td colspan="4" style="text-align: center;">
+                                <img src="images/loading.gif">
+                            </td>
+                        </tr>
+                        <tr ng-repeat="student in sl.studentData()">
+                            <td>{{student.name}}</td>
+                            <td>{{student.course}}</td>
+                            <td>{{student.grade}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger"
+                                        ng-click="slc.deleteStudent($index)">Delete
+                                </button>
+                                <p style="width: 150px; font-weight: bold" class="text-danger"
+                                        ng-show="student.deleteError">
+                                    {{student.deleteErrorMessage}}
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- end .student-list-container, .col-xs-12, .col-md-12, View Student Data -->
         </div>
-        <!-- View Student Data -->
-        <!-- Full on mobile, align left on desktop -->
-        <div class="col-xs-12 col-md-9 col-md-pull-3">
-            <p class="text-danger" style="font-weight: bold; text-align: center" ng-show="ac.loadError">
-                Student Data Failed to Load | Please Try Later
-            </p>
-            <table class="table" ng-controller="studentListController as slc">
-                <thead>
-                    <tr>
-                        <th sort="name">
-                            Student Name
-                            <span class='glyphicon glyphicon-triangle-top'></span>
-                            <span class='glyphicon glyphicon-triangle-bottom'></span>
-                        </th>
-                        <th sort="course">
-                            Student Course
-                            <span class='glyphicon glyphicon-triangle-top'></span>
-                            <span class='glyphicon glyphicon-triangle-bottom'></span>
-                        </th>
-                        <th sort="grade">
-                            Student Grade
-                            <span class='glyphicon glyphicon-triangle-top'></span>
-                            <span class='glyphicon glyphicon-triangle-bottom'></span>
-                        </th>
-                        <th>
-                            Operations
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!--<tr ng-show="ac.loading">
-                        <td colspan="4" style="text-align: center;">
-                            <img src="images/loading.gif">
-                        </td>
-                    </tr>-->
-                    <tr ng-repeat="student in studentArray">
-                        <td>{{student.name}}</td>
-                        <td>{{student.course}}</td>
-                        <td>{{student.grade}}</td>
-                        <td>
-                            <button type="button" class="btn btn-danger"
-                                    ng-click="slc.deleteStudent($index)">Delete</button>
-                            <p style="width: 150px; font-weight: bold" class="text-danger"
-                                    ng-show="student.deleteError">
-                                {{student.deleteErrorMessage}}
-                            </p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div> <!-- end .student-list-container, .col-xs-12, .col-md-12, View Student Data -->
-    </div> <!-- end .row -->
-</div> <!-- end .container-fluid -->
+        <!-- end .row -->
+    </div>
+    <!-- end .container-fluid -->
 </body>
 </html>
 
