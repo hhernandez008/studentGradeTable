@@ -28,7 +28,6 @@ sgtApp.factory("studentDataService", function ($http, $log, $q) {
      * @returns {*}
      */
     student.studentDataCall = function () {
-        var deferred = $q.defer();
         $http({
             data: "api_key=" + apiKey,
             method: "post",
@@ -44,7 +43,6 @@ sgtApp.factory("studentDataService", function ($http, $log, $q) {
             $log.error("Unsuccessful call to http://s-apis.learingfuze.com/sgt/get");
             student.loadError = true;
         });
-        return deferred.promise;
     };
     student.loadingResults = function () {
         return student.studentArray;
@@ -53,17 +51,29 @@ sgtApp.factory("studentDataService", function ($http, $log, $q) {
         return student.loadError;
     };
 
+    student.addError = false;
+
     student.studentAddCall = function (obj) {
-        var deferred = $q.defer();
         var data = "api_key=" + apiKey + "&" + student.dataObjToString(obj);
-        console.log("studentAddCall data: ", data);
         $http({
             data: data,
             method: "post",
             url: "http://s-apis.learningfuze.com/sgt/create"
+        }).then(function(result){
+            if(result.data.success){
+                obj.id = result.data.new_id;
+                student.studentArray.unshift(obj);
+            }else{
+                student.addError = true;
+                $log.error(result.data.errors[0]);
+            }
+        }, function(){
+            $log.error("Unsuccessful call to http://s-apis.learningfuze.com/sgt/create");
+            student.addError = true;
         });
-
-        return deferred.promise;
+    };
+    student.addingError = function(){
+        return student.addError;
     };
 
     return student;
