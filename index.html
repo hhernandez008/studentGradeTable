@@ -108,7 +108,7 @@
                         ng-click="ac.reloadStudents();">
                     Reload Student Data
                 </button>
-                <p class="text-danger" style="font-weight: bold; text-align: center"
+                <p class="text-danger" style="font-weight: bold; font-size: 1.2em; text-align: center"
                         ng-show="fc.addStudentError();">
                     Failed to Add Student <br> Please Try Again
                 </p>
@@ -117,7 +117,8 @@
             <!-- View Student Data -->
             <!-- Full on mobile, align left on desktop -->
             <div class="col-xs-12 col-md-9 col-md-pull-3" ng-controller="studentList as sl">
-                <p class="text-danger" style="font-weight: bold; text-align: center" ng-show="sl.loadError()">
+                <p class="text-danger" style="font-weight: bold; font-size: 1.2em; text-align: center"
+                        ng-show="sl.loadError()">
                     Student Data Failed to Load | Please Try Later
                 </p>
                 <table class="table">
@@ -166,7 +167,7 @@
                 <div ng-show="sl.deleteError();"
                         style="position:fixed; bottom: 0; background-color: #fff; height: 50px; width: 100%">
                     <p ng-if="sl.deleteError();" class="text-danger"
-                            style="font-weight: bold; font-size: 1.5em; padding: 2%;">
+                            style="font-weight: bold; font-size: 1.5em; padding: 1% 2%;">
                         Error: {{sl.errorMessage()}}
                     </p>
                 </div>
