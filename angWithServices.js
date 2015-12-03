@@ -82,15 +82,15 @@ sgtApp.factory("studentDataService", function ($http, $log) {
     };
 
     student.delteError = false;
-    student.studentDeleteCall = function (num) {
-        var data = "api_key=" + apiKey + "&student_id=" + num;
+    student.studentDeleteCall = function (studentId, index) {
+        var data = "api_key=" + apiKey + "&student_id=" + studentId;
         $http({
             data: data,
             method: "post",
             url: "http://s-apis.learningfuze.com/sgt/delete"
         }).then(function (result) {
             if (result.data.success) {
-                student.studentArray.splice(num, 1);
+                student.studentArray.splice(index, 1);
             } else {
                 student.deleteError = true;
                 $log.error(result.data.data.errors[0]);
@@ -139,13 +139,14 @@ sgtApp.controller("appController", function (studentDataService) {
         studentDataService.resetErrors();
         this.newStudent = {};
     }
-}).controller("studentList", function (studentDataService) {
+}).controller("studentList", function (studentDataService, $scope) {
     this.loadError = studentDataService.loadingError;
     //copy of the studentDataService.studentDataCall
     this.studentData = studentDataService.loadingResults;
 
     this.deleteStudent = function (num) {
         var studentID = studentDataService.studentArray[num].id;
-        studentDataService.studentDeleteCall(studentID);
+        console.log("studentID ", studentID);
+        studentDataService.studentDeleteCall(studentID, num);
     };
 });
