@@ -5,7 +5,7 @@ sgtApp.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
 }]);
 
-sgtApp.factory("studentDataService", function ($http, $log, $q) {
+sgtApp.factory("studentDataService", function ($http, $log) {
     var student = {};
     var apiKey = "JhpapQQx34";
     student.studentArray = [];
@@ -33,13 +33,13 @@ sgtApp.factory("studentDataService", function ($http, $log, $q) {
             method: "post",
             url: "http://s-apis.learningfuze.com/sgt/get"
         }).then(function (result) {
-            if(result.data.success) {
-                student.studentArray = result.data.data;
-            }else{
+            if (result.data.success) {
+                student.studentArray = result.data.data.reverse();
+            } else {
                 student.loadError = true;
                 $log.error(result.data.error[0]);
             }
-        }, function (){
+        }, function () {
             $log.error("Unsuccessful call to http://s-apis.learingfuze.com/sgt/get");
             student.loadError = true;
         });
@@ -47,7 +47,7 @@ sgtApp.factory("studentDataService", function ($http, $log, $q) {
     student.loadingResults = function () {
         return student.studentArray;
     };
-    student.loadingError = function(){
+    student.loadingError = function () {
         return student.loadError;
     };
 
@@ -59,29 +59,53 @@ sgtApp.factory("studentDataService", function ($http, $log, $q) {
             data: data,
             method: "post",
             url: "http://s-apis.learningfuze.com/sgt/create"
-        }).then(function(result){
-            if(result.data.success){
+        }).then(function (result) {
+            if (result.data.success) {
                 obj.id = result.data.new_id;
                 student.studentArray.unshift(obj);
-            }else{
+            } else {
                 student.addError = true;
                 $log.error(result.data.errors[0]);
             }
-        }, function(){
+        }, function () {
             $log.error("Unsuccessful call to http://s-apis.learningfuze.com/sgt/create");
             student.addError = true;
         });
     };
-    student.addingError = function(){
+    student.addingError = function () {
         return student.addError;
     };
 
-    student.resetErrors = function(){
+    student.resetErrors = function () {
         student.loadError = false;
         student.addError = false;
     };
+
+    student.delteError = false;
+    student.studentDeleteCall = function (num) {
+        var data = "api_key=" + apiKey + "&student_id=" + num;
+        $http({
+            data: data,
+            method: "post",
+            url: "http://s-apis.learningfuze.com/sgt/delete"
+        }).then(function (result) {
+            if (result.data.success) {
+                student.studentArray.splice(num, 1);
+            } else {
+                student.deleteError = true;
+                $log.error(result.data.data.errors[0]);
+            }
+        }, function (result) {
+            student.deleteError = true;
+            $log.error("Unsuccessful call to http://s-apis.learninfuze.com/sgt/create");
+        });
+    };
+    student.deletingError = function () {
+        return student.deleteError;
+    };
     return student;
 });
+
 
 sgtApp.controller("appController", function (studentDataService) {
     //make initial call to retrieve student data
@@ -93,37 +117,35 @@ sgtApp.controller("appController", function (studentDataService) {
     };
 
     //calculate average
-    this.calculateAverage = function(){
+    this.calculateAverage = function () {
         var gradeSum = 0;
         var numGrades = 0;
-        for(var i = 0; i < studentDataService.studentArray.length; i++){
+        for (var i = 0; i < studentDataService.studentArray.length; i++) {
             gradeSum += studentDataService.studentArray[i].grade;
             numGrades++;
         }
-        return Math.round(gradeSum/numGrades);
+        return Math.round(gradeSum / numGrades);
     };
-});
-
-sgtApp.controller("formController", function (studentDataService) {
+}).controller("formController", function (studentDataService) {
     this.newStudent = {};
     this.addStudentError = studentDataService.addingError;
     //add student to database & update studentDataService.studentArray
     this.addStudent = function () {
         studentDataService.resetErrors();
         studentDataService.studentAddCall(this.newStudent);
+        this.newStudent = {};
     };
-    this.resetForm = function(){
+    this.resetForm = function () {
         studentDataService.resetErrors();
         this.newStudent = {};
     }
-});
-
-sgtApp.controller("studentList", function (studentDataService) {
+}).controller("studentList", function (studentDataService) {
     this.loadError = studentDataService.loadingError;
     //copy of the studentDataService.studentDataCall
     this.studentData = studentDataService.loadingResults;
 
-    this.deleteStudent = function () {
-
+    this.deleteStudent = function (num) {
+        var studentID = studentDataService.studentArray[num].id;
+        studentDataService.studentDeleteCall(studentID);
     };
 });

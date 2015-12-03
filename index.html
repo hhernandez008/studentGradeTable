@@ -98,7 +98,13 @@
                         ng-click="fc.resetForm();">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-primary" style="margin: 1%"
+                <!-- hidden on small and x-small screen -->
+                <button type="button" class="btn btn-primary hidden-sm hidden-xs" style="margin-top: 2%"
+                        ng-click="ac.reloadStudents();">
+                    Reload Student Data
+                </button>
+                <!-- visible on small and x-small screen -->
+                <button type="button" class="btn btn-primary visible-sm visible-xs pull-right"
                         ng-click="ac.reloadStudents();">
                     Reload Student Data
                 </button>
@@ -149,7 +155,8 @@
                             <td>{{student.grade}}</td>
                             <td>
                                 <button type="button" class="btn btn-danger"
-                                        ng-click="slc.deleteStudent($index)">Delete
+                                        ng-click="sl.deleteStudent($index)">
+                                    Delete
                                 </button>
                                 <p style="width: 150px; font-weight: bold" class="text-danger"
                                         ng-show="student.deleteError">
