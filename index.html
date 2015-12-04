@@ -14,14 +14,7 @@
     <script src="ang.js"></script>
     <script src="controllers.js"></script>
 
-    <style>
-        .ui-autocomplete {
-            max-height: 200px;
-            overflow-y: auto;
-            /* prevent horizontal scrollbar */
-            overflow-x: hidden;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 
 </head>
 <body ng-controller="appController as ac">
@@ -69,8 +62,8 @@
                         <input type="text" class="form-control" name="studentName"
                                 placeholder="Student Name" ng-model="fc.newStudent.name">
                     </div>
-                    <div ng-show="fc.nameError;">
-                        Enter name of at least two characters.
+                    <div class="text-danger valError" ng-show="fc.nameError;">
+                        Enter student name of at least two characters.
                     </div>
                 </div>
                 <!-- Course Input -->
@@ -82,8 +75,8 @@
                         <input type="text" class="form-control" name="course"
                                 placeholder="Student Course" ng-model="fc.newStudent.course">
                     </div>
-                    <div ng-show="fc.courseError;">
-                        Enter course of at least two characters.
+                    <div class="text-danger valError" ng-show="fc.courseError;">
+                        Enter course name of at least two characters.
                     </div>
                 </div>
                 <!-- Grade Input -->
@@ -95,7 +88,7 @@
                         <input type="number" class="form-control" name="studentGrade"
                                 placeholder="Student Grade" ng-model="fc.newStudent.grade">
                     </div>
-                    <div ng-show="fc.gradeError;">
+                    <div class="text-danger valError" ng-show="fc.gradeError;">
                         Enter grade from 0 - 100.
                     </div>
                 </div>
@@ -108,7 +101,7 @@
                     Cancel
                 </button>
                 <!-- hidden on small and x-small screen -->
-                <button type="button" class="btn btn-primary hidden-sm hidden-xs" style="margin: 2% 0;"
+                <button type="button" class="btn btn-primary hidden-sm hidden-xs"
                         ng-click="ac.reloadStudents();">
                     Reload Student Data
                 </button>
@@ -117,8 +110,7 @@
                         ng-click="ac.reloadStudents();">
                     Reload Student Data
                 </button>
-                <p class="text-danger" style="font-weight: bold; font-size: 1.2em; text-align: center"
-                        ng-show="fc.addStudentError();">
+                <p class="text-danger addError" ng-show="fc.addStudentError();">
                     Failed to Add Student <br> Please Try Again
                 </p>
                 <hr>
@@ -126,8 +118,7 @@
             <!-- View Student Data -->
             <!-- Full on mobile, align left on desktop -->
             <div class="col-xs-12 col-md-9 col-md-pull-3" ng-controller="studentList as sl">
-                <p class="text-danger" style="font-weight: bold; font-size: 1.2em; text-align: center"
-                        ng-show="sl.loadError()">
+                <p class="text-danger loadError" ng-show="sl.loadError()">
                     Student Data Failed to Load | Please Try Later
                 </p>
                 <table class="table">
@@ -156,7 +147,7 @@
                     <tbody>
 
                         <tr ng-show="sl.studentData().length == 0">
-                            <td colspan="4" style="text-align: center;">
+                            <td colspan="4" class="loadImage">
                                 <img src="images/loading.gif">
                             </td>
                         </tr>
@@ -173,13 +164,10 @@
                         </tr>
                     </tbody>
                 </table>
-                <div ng-show="sl.deleteError();"
-                        style="position:fixed; bottom: 0; background-color: #fff; height: 50px; width: 100%">
-                    <p ng-if="sl.deleteError();" class="text-danger"
-                            style="font-weight: bold; font-size: 1.5em; padding: 1% 2%;">
+                <div class="deleteError" ng-show="sl.deleteError();">
+                    <p ng-if="sl.deleteError();" class="text-danger deleteErrorTxt">
                         Error: {{sl.errorMessage()}}
-                        <button type="button" ng-click="ac.resetErrors();"
-                                style="color: #000; margin: 0 3%; font-size: 0.5em; vertical-align: super">
+                        <button type="button" class="deleteErrorBtn" ng-click="ac.resetErrors();">
                             &times;
                         </button>
                     </p>

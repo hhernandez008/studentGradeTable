@@ -1,0 +1,38 @@
+/*.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    /!* prevent horizontal scrollbar *!/
+    overflow-x: hidden;
+}*/
+.valError{
+    margin-left: 40px;
+}
+.btn-primary.hidden-sm{
+    margin: 2% 0;
+}
+.addError, .loadError{
+    font-weight: bold;
+    font-size: 1.2em;
+    text-align: center;
+}
+.loadImage{
+    text-align: center;
+}
+.deleteError{
+    position:fixed;
+    bottom: 0;
+    background-color: #fff;
+    height: 50px;
+    width: 100%;
+}
+.deleteErrorTxt{
+    font-weight: bold;
+    font-size: 1.5em;
+    padding: 1% 2%;
+}
+.deleteErrorBtn{
+    color: #000;
+    margin: 0 3%;
+    font-size: 0.5em;
+    vertical-align: super;
+}

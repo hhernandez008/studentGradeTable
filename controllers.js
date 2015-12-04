@@ -50,7 +50,14 @@ sgtApp.controller("appController", function (studentDataService) {
     };
     this.resetForm = function () {
         studentDataService.resetErrors();
-        this.newStudent = {};
+        this.newStudent = {
+            name: "",
+            course: "",
+            grade: null
+        };
+        this.nameError = false;
+        this.courseError = false;
+        this.gradeError = false;
     }
 }).controller("studentList", function (studentDataService) {
     this.loadError = studentDataService.loadingError;
