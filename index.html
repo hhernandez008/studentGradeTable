@@ -175,14 +175,15 @@
                                 <img src="images/loading.gif">
                             </td>
                         </tr>
-                        <tr ng-repeat="student in sl.studentData() | orderBy: sl.sortField: sl.reverseSort;">
+                        <tr
+                                ng-repeat="student in sl.studentData() | orderBy: sl.sortField: sl.reverseSort">
                             <td>{{student.name}}</td>
                             <td>{{student.course}}</td>
                             <td>{{student.grade}}</td>
                             <td>
                                 <button type="button" class="btn btn-danger"
-                                        ng-click="sl.deleteStudent($index)">
-                                    Delete {{$index}}
+                                        ng-click="sl.deleteStudent(student.id)">
+                                    Delete
                                 </button>
                             </td>
                         </tr>

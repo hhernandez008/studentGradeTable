@@ -109,7 +109,7 @@ sgtApp.service("studentDataService", function ($http, $log) {
      * @param studentId
      * @param index
      */
-    student.studentDeleteCall = function (studentId, index) {
+    student.studentDeleteCall = function (studentId) {
         var data = "api_key=" + apiKey + "&student_id=" + studentId;
         $http({
             data: data,
@@ -117,7 +117,16 @@ sgtApp.service("studentDataService", function ($http, $log) {
             url: "http://s-apis.learningfuze.com/sgt/delete"
         }).then(function (result) {
             if (result.data.success) {
-                student.studentArray.splice(index, 1);
+                //search studentArray for the matching id
+                var i = 0;
+                while(i < student.studentArray.length){
+                    if(student.studentArray[i].id === studentId){
+                        student.studentArray.splice(i, 1);
+                        return;
+                    }
+                    i++;
+                }
+
             } else {
                 student.deleteError = true;
                 student.deleteErrorMessage = "You are not authorized to delete this student";

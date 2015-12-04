@@ -66,10 +66,9 @@ sgtApp.controller("appController", function (studentDataService) {
 
     this.deleteError = studentDataService.deletingError;
     this.errorMessage = studentDataService.deletingErrorMessage;
-    this.deleteStudent = function (num) {
+    this.deleteStudent = function (id) {
         studentDataService.resetErrors();
-        var studentID = studentDataService.studentArray[num].id;
-        studentDataService.studentDeleteCall(studentID, num);
+        studentDataService.studentDeleteCall(id);
     };
 
     this.sortField = "";
