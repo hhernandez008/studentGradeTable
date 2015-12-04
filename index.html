@@ -121,6 +121,10 @@
                 <p class="text-danger loadError" ng-show="sl.loadError()">
                     Student Data Failed to Load | Please Try Later
                 </p>
+                <button type="button" class="btn pull-right"
+                        ng-class="{'btn-primary':(sl.sortField != ''), 'btn-default':(sl.sortField == '')}"
+                        ng-click="sl.sortField = ''; sl.reverseSort = false;">
+                    Clear Sorting</button>
                 <table class="table">
                     <thead>
                         <tr>
@@ -169,7 +173,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-show="sl.studentData().length == 0">
+                        <tr ng-show="sl.studentData().length == 0 && !(sl.loadError())">
                             <td colspan="4" class="loadImage">
                                 <img src="images/loading.gif">
                             </td>
