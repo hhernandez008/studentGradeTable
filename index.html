@@ -125,19 +125,43 @@
                     <thead>
                         <tr>
                             <th sort="name" ng-click="sl.sorting('name');">
-                                Student Name
-                                <span class='glyphicon glyphicon-triangle-top'></span>
-                                <span class='glyphicon glyphicon-triangle-bottom'></span>
+                                <a href="">
+                                    Student Name
+                                    <span class="glyphicon glyphicon-triangle-top"
+                                        ng-show="(sl.sortField != 'name')||
+                                        (sl.sortField == 'name' && sl.reverseSort == false);">
+                                    </span>
+                                    <span class="glyphicon glyphicon-triangle-bottom"
+                                        ng-show="(sl.sortField != 'name')||
+                                        (sl.sortField == 'name' && sl.reverseSort == true);">
+                                    </span>
+                                </a>
                             </th>
                             <th sort="course" ng-click="sl.sorting('course');">
-                                Student Course
-                                <span class='glyphicon glyphicon-triangle-top'></span>
-                                <span class='glyphicon glyphicon-triangle-bottom'></span>
+                                <a href="">
+                                    Student Course
+                                    <span class="glyphicon glyphicon-triangle-top"
+                                        ng-show="(sl.sortField != 'course')||
+                                        (sl.sortField == 'course' && sl.reverseSort == false);">
+                                    </span>
+                                    <span class="glyphicon glyphicon-triangle-bottom"
+                                        ng-show="(sl.sortField != 'course')||
+                                        (sl.sortField == 'course' && sl.reverseSort == true);">
+                                    </span>
+                                </a>
                             </th>
                             <th sort="grade" ng-click="sl.sorting('grade');">
-                                Student Grade
-                                <span class='glyphicon glyphicon-triangle-top'></span>
-                                <span class='glyphicon glyphicon-triangle-bottom'></span>
+                                <a href="">
+                                    Student Grade
+                                    <span class="glyphicon glyphicon-triangle-top"
+                                        ng-show="(sl.sortField != 'grade')||
+                                        (sl.sortField == 'grade' && sl.reverseSort == false);">
+                                    </span>
+                                    <span class="glyphicon glyphicon-triangle-bottom"
+                                        ng-show="(sl.sortField != 'grade')||
+                                        (sl.sortField == 'grade' && sl.reverseSort == true);">
+                                    </span>
+                                </a>
                             </th>
                             <th>
                                 Operations
@@ -158,7 +182,7 @@
                             <td>
                                 <button type="button" class="btn btn-danger"
                                         ng-click="sl.deleteStudent($index)">
-                                    Delete
+                                    Delete {{$index}}
                                 </button>
                             </td>
                         </tr>

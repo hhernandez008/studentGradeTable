@@ -36,3 +36,12 @@
     font-size: 0.5em;
     vertical-align: super;
 }
+a{
+    color: black;
+}
+a:hover, a:focus{
+    text-decoration: none;
+}
+.reverseSort{
+    content: "
+}
