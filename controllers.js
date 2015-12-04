@@ -75,16 +75,13 @@ sgtApp.controller("appController", function (studentDataService) {
     this.reverseSort = false;
     this.sorting = function(field){
         if(this.sortField === field){
-            console.log("reverse sort: $index 0: ", studentDataService.studentArray[0]);
             //set reverseSort to its opposite
             this.reverseSort = !this.reverseSort;
         }else{
-            console.log("before initial sort: $index 0: ", studentDataService.studentArray[0]);
             //new field reset reverseSort to false
             this.reverseSort = false;
             //set sortField to new field clicked
             this.sortField = field;
-            console.log("after initial sort: $index 0: ", studentDataService.studentArray[0]);
         }
 
     };

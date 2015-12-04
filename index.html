@@ -124,7 +124,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th sort="name" ng-click="sl.sorting('name');">
+                            <th ng-click="sl.sorting('name');" ng-class="{'sorted':sl.sortField == 'name'}">
                                 <a href="">
                                     Student Name
                                     <span class="glyphicon glyphicon-triangle-top"
@@ -137,7 +137,7 @@
                                     </span>
                                 </a>
                             </th>
-                            <th sort="course" ng-click="sl.sorting('course');">
+                            <th ng-click="sl.sorting('course');" ng-class="{'sorted':sl.sortField == 'course'}">
                                 <a href="">
                                     Student Course
                                     <span class="glyphicon glyphicon-triangle-top"
@@ -150,7 +150,7 @@
                                     </span>
                                 </a>
                             </th>
-                            <th sort="grade" ng-click="sl.sorting('grade');">
+                            <th ng-click="sl.sorting('grade');" ng-class="{'sorted':sl.sortField == 'grade'}">
                                 <a href="">
                                     Student Grade
                                     <span class="glyphicon glyphicon-triangle-top"
@@ -169,14 +169,12 @@
                         </tr>
                     </thead>
                     <tbody>
-
                         <tr ng-show="sl.studentData().length == 0">
                             <td colspan="4" class="loadImage">
                                 <img src="images/loading.gif">
                             </td>
                         </tr>
-                        <tr
-                                ng-repeat="student in sl.studentData() | orderBy: sl.sortField: sl.reverseSort">
+                        <tr ng-repeat="student in sl.studentData() | orderBy: sl.sortField: sl.reverseSort">
                             <td>{{student.name}}</td>
                             <td>{{student.course}}</td>
                             <td>{{student.grade}}</td>
