@@ -63,14 +63,14 @@ sgtApp.controller("appController", function (studentDataService) {
     this.loadError = studentDataService.loadingError;
     //copy of the studentDataService.studentDataCall
     this.studentData = studentDataService.loadingResults;
-
+    //DELETING STUDENTS
     this.deleteError = studentDataService.deletingError;
     this.errorMessage = studentDataService.deletingErrorMessage;
     this.deleteStudent = function (id) {
         studentDataService.resetErrors();
         studentDataService.studentDeleteCall(id);
     };
-
+    //SORTING COLUMNS
     this.sortField = "";
     this.reverseSort = false;
     this.sorting = function(field){
@@ -83,6 +83,8 @@ sgtApp.controller("appController", function (studentDataService) {
             //set sortField to new field clicked
             this.sortField = field;
         }
-
     };
+    //FILTERING
+    this.filterText = {};
+
 });

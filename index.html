@@ -115,16 +115,37 @@
                 </p>
                 <hr>
             </div>
-            <!-- View Student Data -->
             <!-- Full on mobile, align left on desktop -->
             <div class="col-xs-12 col-md-9 col-md-pull-3" ng-controller="studentListController as sl">
+                <!-- Error message to display if data can't be retrieved -->
                 <p class="text-danger loadError" ng-show="sl.loadError()">
                     Student Data Failed to Load | Please Try Later
                 </p>
-                <button type="button" class="btn pull-right"
-                        ng-class="{'btn-primary':(sl.sortField != ''), 'btn-default':(sl.sortField == '')}"
+                <!-- Filter data shown -->
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-filter"></span>
+                            <!-- Display the group/column the table will filter within -->
+                            <span id="filterGroup"></span>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Filter by Course"
+                                ng-model="sl.filterText.course">
+                        <span ng-show="sl.filterText.course !== undefined && sl.filterText.course != '';"
+                                class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-click="sl.filterText = {};">
+                                Clear Filter
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <!-- Button to clear sorting -->
+                <button type="button" class="btn btn-primary pull-right"
+                        ng-hide="sl.sortField == '';"
                         ng-click="sl.sortField = ''; sl.reverseSort = false;">
-                    Clear Sorting</button>
+                    Clear Sort
+                </button>
+                <!-- Table to display student data -->
                 <table class="table">
                     <thead>
                         <tr>
@@ -132,11 +153,11 @@
                                 <a href="">
                                     Student Name
                                     <span class="glyphicon glyphicon-triangle-top"
-                                        ng-show="(sl.sortField != 'name')||
+                                            ng-show="(sl.sortField != 'name')||
                                         (sl.sortField == 'name' && sl.reverseSort == false);">
                                     </span>
                                     <span class="glyphicon glyphicon-triangle-bottom"
-                                        ng-show="(sl.sortField != 'name')||
+                                            ng-show="(sl.sortField != 'name')||
                                         (sl.sortField == 'name' && sl.reverseSort == true);">
                                     </span>
                                 </a>
@@ -145,11 +166,11 @@
                                 <a href="">
                                     Student Course
                                     <span class="glyphicon glyphicon-triangle-top"
-                                        ng-show="(sl.sortField != 'course')||
+                                            ng-show="(sl.sortField != 'course')||
                                         (sl.sortField == 'course' && sl.reverseSort == false);">
                                     </span>
                                     <span class="glyphicon glyphicon-triangle-bottom"
-                                        ng-show="(sl.sortField != 'course')||
+                                            ng-show="(sl.sortField != 'course')||
                                         (sl.sortField == 'course' && sl.reverseSort == true);">
                                     </span>
                                 </a>
@@ -158,11 +179,11 @@
                                 <a href="">
                                     Student Grade
                                     <span class="glyphicon glyphicon-triangle-top"
-                                        ng-show="(sl.sortField != 'grade')||
+                                            ng-show="(sl.sortField != 'grade')||
                                         (sl.sortField == 'grade' && sl.reverseSort == false);">
                                     </span>
                                     <span class="glyphicon glyphicon-triangle-bottom"
-                                        ng-show="(sl.sortField != 'grade')||
+                                            ng-show="(sl.sortField != 'grade')||
                                         (sl.sortField == 'grade' && sl.reverseSort == true);">
                                     </span>
                                 </a>
@@ -178,7 +199,8 @@
                                 <img src="images/loading.gif">
                             </td>
                         </tr>
-                        <tr ng-repeat="student in sl.studentData() | orderBy: sl.sortField: sl.reverseSort">
+                        <tr
+                                ng-repeat="student in sl.studentData() | filter: sl.filterText | orderBy: sl.sortField: sl.reverseSort">
                             <td>{{student.name}}</td>
                             <td>{{student.course}}</td>
                             <td>{{student.grade}}</td>

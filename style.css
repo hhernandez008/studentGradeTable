@@ -10,12 +10,6 @@
 .btn-primary.hidden-sm{
     margin: 2% 0;
 }
-.btn-default.pull-right:hover, .btn-default.pull-right:focus{
-    background: #fff;
-    border-color: #ccc;
-    outline: none;
-    cursor: auto;
-}
 .addError, .loadError{
     font-weight: bold;
     font-size: 1.2em;
