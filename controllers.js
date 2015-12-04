@@ -59,7 +59,7 @@ sgtApp.controller("appController", function (studentDataService) {
         this.courseError = false;
         this.gradeError = false;
     }
-}).controller("studentList", function (studentDataService) {
+}).controller("studentListController", function (studentDataService) {
     this.loadError = studentDataService.loadingError;
     //copy of the studentDataService.studentDataCall
     this.studentData = studentDataService.loadingResults;
@@ -70,5 +70,20 @@ sgtApp.controller("appController", function (studentDataService) {
         studentDataService.resetErrors();
         var studentID = studentDataService.studentArray[num].id;
         studentDataService.studentDeleteCall(studentID, num);
+    };
+
+    this.sortField = "";
+    this.reverseSort = false;
+    this.sorting = function(field){
+        if(this.sortField === field){
+            //set reverseSort to its opposite
+            this.reverseSort = !this.reverseSort;
+        }else{
+            //new field reset reverseSort to false
+            this.reverseSort = false;
+            //set sortField to new field clicked
+            this.sortField = field;
+        }
+
     };
 });

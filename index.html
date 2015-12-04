@@ -117,24 +117,24 @@
             </div>
             <!-- View Student Data -->
             <!-- Full on mobile, align left on desktop -->
-            <div class="col-xs-12 col-md-9 col-md-pull-3" ng-controller="studentList as sl">
+            <div class="col-xs-12 col-md-9 col-md-pull-3" ng-controller="studentListController as sl">
                 <p class="text-danger loadError" ng-show="sl.loadError()">
                     Student Data Failed to Load | Please Try Later
                 </p>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th sort="name">
+                            <th sort="name" ng-click="sl.sorting('name');">
                                 Student Name
                                 <span class='glyphicon glyphicon-triangle-top'></span>
                                 <span class='glyphicon glyphicon-triangle-bottom'></span>
                             </th>
-                            <th sort="course">
+                            <th sort="course" ng-click="sl.sorting('course');">
                                 Student Course
                                 <span class='glyphicon glyphicon-triangle-top'></span>
                                 <span class='glyphicon glyphicon-triangle-bottom'></span>
                             </th>
-                            <th sort="grade">
+                            <th sort="grade" ng-click="sl.sorting('grade');">
                                 Student Grade
                                 <span class='glyphicon glyphicon-triangle-top'></span>
                                 <span class='glyphicon glyphicon-triangle-bottom'></span>
@@ -151,7 +151,7 @@
                                 <img src="images/loading.gif">
                             </td>
                         </tr>
-                        <tr ng-repeat="student in sl.studentData()">
+                        <tr ng-repeat="student in sl.studentData() | orderBy: sl.sortField: sl.reverseSort;">
                             <td>{{student.name}}</td>
                             <td>{{student.course}}</td>
                             <td>{{student.grade}}</td>
