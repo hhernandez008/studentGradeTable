@@ -10,7 +10,6 @@ sgtApp.service("studentDataService", function ($http, $log) {
     var apiKey = "JhpapQQx34";
     //Collect student data retrieved from database
     student.studentArray = [];
-
     /**
      * Take the passed in obj and convert it to a parameter string for use in url/param string creation.
      * @param obj
@@ -98,7 +97,6 @@ sgtApp.service("studentDataService", function ($http, $log) {
         return student.addError;
     };
 
-
     /**
      * DELETING STUDENTS
      */
@@ -150,40 +148,63 @@ sgtApp.service("studentDataService", function ($http, $log) {
         student.deleteErrorMessage = "";
     };
 }) //end studentDataService
-    .factory("validationService", function(){
-        var validator = {};
-        validator.lettersOnly = function(string){
+    .service("validationService", function(){
+        //if there is an incorrect match return true, else param passes & return false
+        /**
+         * Check if the string passed in contains any characters besides letters, spaces or dashes.
+         * Then check if the length is at least 2 characters.
+         * @param string
+         * @returns {boolean}
+         */
+        this.lettersOnly = function(string){
             //if string contains any numbers or unwanted characters return error
             if(string.search(/([^A-z -])/) >= 0){
                 //any string that contains characters other than letters & spaces
-                return false;
-            }else if(string.length < 3){
+                return true;
+            }else if(string.length < 2){
                 //any string with less than three characters
-                return false;
+                return true;
             }
-            return true;
+            return false;
         };
-        validator.lettersAndNumbersOnly = function(string){
+
+        /**
+         * Check if the string passed in contains any characters besides letters, numbers, & spaces.
+         * Then check that the length is at least 2 characters.
+         * @param string
+         * @returns {boolean}
+         */
+        this.lettersAndNumbersOnly = function(string){
             //if string contains any special characters return error
             if(string.search(/([^\w\s])/) >= 0){
-                return false;
-            }else if(string.length < 3){
+                return true;
+            }else if(string.length < 2){
                 //any string with less than three characters
-                return false;
+                return true;
             }
-            return true;
+            return false;
         };
-        validator.numBetween = function(num, minNum, maxNum){
+
+        /**
+         * Check if the num passed in is within the range of the minNum & maxNum
+         * @param num
+         * @param minNum
+         * @param maxNum
+         * @returns {boolean}
+         */
+        this.numBetween = function(num, minNum, maxNum){
             //make sure num is a number
             if(typeof(num) != "number"){
                 num = parseFloat(num);
+                if(isNaN(num)){
+                    return true;
+                }
             }
             //if num is outside of minNum & maxNum range return error
             if(num < minNum || num > maxNum){
-                return false;
+                return true;
             }
-            return true;
+            return false;
         };
-        return validator;
     });
 

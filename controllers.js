@@ -25,41 +25,28 @@ sgtApp.controller("appController", function (studentDataService) {
     this.newStudent = {
         name: "",
         course: "",
-        grade: ""
+        grade: null
     };
-    this.nameError = false;
-    this.courseError = false;
-    this.gradeError = false;
-    this.addStudentError = studentDataService.addingError;
+
     //add student to database & update studentDataService.studentArray
     this.addStudent = function () {
-        console.log("student name", this.newStudent.name);
-        var nameBool = validationService.lettersOnly(this.newStudent.name);
-        console.log("student course", this.newStudent.course);
-        var courseBool = validationService.lettersAndNumbersOnly(this.newStudent.course);
-        console.log("student grade", this.newStudent.grade);
-        var gradeBool = validationService.numBetween(this.newStudent.grade, 0, 100);
-        if(nameBool && courseBool && gradeBool){
+        //if there is an error will return true
+        this.nameError = validationService.lettersOnly(this.newStudent.name);
+        this.courseError = validationService.lettersAndNumbersOnly(this.newStudent.course);
+        this.gradeError = validationService.numBetween(this.newStudent.grade, 0, 100);
+
+        //if each pass validation test will return false
+        if(!this.nameError && !this.courseError && !this.gradeError){
             //all inputs validate to true
             studentDataService.resetErrors();
-            console.log("before add call ", this.newStudent);
             studentDataService.studentAddCall(this.newStudent);
-            //this.newStudent = {};
-        }else{
-            if(!nameBool){
-                console.log("name error");
-                this.nameError = true;
-            }
-            if(!courseBool){
-                console.log("course error");
-                this.courseError = true;
-            }
-            if(!gradeBool){
-                console.log("grade error");
-                this.gradeError = true;
-            }
+            //reset newStudent
+            this.newStudent = {
+                name: "",
+                course: "",
+                grade: null
+            };
         }
-
     };
     this.resetForm = function () {
         studentDataService.resetErrors();

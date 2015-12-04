@@ -66,8 +66,11 @@
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-user"> </span>
                         </span>
-                        <input type="text" class="form-control" name="studentName" placeholder="Student Name"
-                                ng-model="fc.newStudent.name">
+                        <input type="text" class="form-control" name="studentName"
+                                placeholder="Student Name" ng-model="fc.newStudent.name">
+                    </div>
+                    <div ng-show="fc.nameError;">
+                        Enter name of at least two characters.
                     </div>
                 </div>
                 <!-- Course Input -->
@@ -79,6 +82,9 @@
                         <input type="text" class="form-control" name="course"
                                 placeholder="Student Course" ng-model="fc.newStudent.course">
                     </div>
+                    <div ng-show="fc.courseError;">
+                        Enter course of at least two characters.
+                    </div>
                 </div>
                 <!-- Grade Input -->
                 <div class="form-group">
@@ -88,6 +94,9 @@
                         </span>
                         <input type="number" class="form-control" name="studentGrade"
                                 placeholder="Student Grade" ng-model="fc.newStudent.grade">
+                    </div>
+                    <div ng-show="fc.gradeError;">
+                        Enter grade from 0 - 100.
                     </div>
                 </div>
                 <!-- Submit Buttons -->
