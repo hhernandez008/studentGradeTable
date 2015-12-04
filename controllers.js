@@ -21,14 +21,45 @@ sgtApp.controller("appController", function (studentDataService) {
         }
         return Math.round(gradeSum / numGrades);
     };
-}).controller("formController", function (studentDataService) {
-    this.newStudent = {};
+}).controller("formController", function (studentDataService, validationService) {
+    this.newStudent = {
+        name: "",
+        course: "",
+        grade: ""
+    };
+    this.nameError = false;
+    this.courseError = false;
+    this.gradeError = false;
     this.addStudentError = studentDataService.addingError;
     //add student to database & update studentDataService.studentArray
     this.addStudent = function () {
-        studentDataService.resetErrors();
-        studentDataService.studentAddCall(this.newStudent);
-        this.newStudent = {};
+        console.log("student name", this.newStudent.name);
+        var nameBool = validationService.lettersOnly(this.newStudent.name);
+        console.log("student course", this.newStudent.course);
+        var courseBool = validationService.lettersAndNumbersOnly(this.newStudent.course);
+        console.log("student grade", this.newStudent.grade);
+        var gradeBool = validationService.numBetween(this.newStudent.grade, 0, 100);
+        if(nameBool && courseBool && gradeBool){
+            //all inputs validate to true
+            studentDataService.resetErrors();
+            console.log("before add call ", this.newStudent);
+            studentDataService.studentAddCall(this.newStudent);
+            //this.newStudent = {};
+        }else{
+            if(!nameBool){
+                console.log("name error");
+                this.nameError = true;
+            }
+            if(!courseBool){
+                console.log("course error");
+                this.courseError = true;
+            }
+            if(!gradeBool){
+                console.log("grade error");
+                this.gradeError = true;
+            }
+        }
+
     };
     this.resetForm = function () {
         studentDataService.resetErrors();

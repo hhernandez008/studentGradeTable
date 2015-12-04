@@ -68,6 +68,7 @@ sgtApp.service("studentDataService", function ($http, $log) {
      * @param obj
      */
     student.studentAddCall = function (obj) {
+        var object = obj;
         var data = "api_key=" + apiKey + "&" + student.dataObjToString(obj);
         $http({
             data: data,
@@ -75,16 +76,21 @@ sgtApp.service("studentDataService", function ($http, $log) {
             url: "http://s-apis.learningfuze.com/sgt/create"
         }).then(function (result) {
             if (result.data.success) {
-                obj.id = result.data.new_id;
+                object.id = result.data.new_id;
                 //add student to the start of the array
-                student.studentArray.unshift(obj);
+                student.studentArray.unshift(object);
+                //return empty object to clear the object passed in
+                object = {};
+                return object;
             } else {
                 student.addError = true;
                 $log.error(result.data.errors[0]);
+                return object;
             }
         }, function () {
             $log.error("Unsuccessful call to http://s-apis.learningfuze.com/sgt/create");
             student.addError = true;
+            return object;
         });
     };
     //return add student error indicator
@@ -143,6 +149,41 @@ sgtApp.service("studentDataService", function ($http, $log) {
         student.deleteError = false;
         student.deleteErrorMessage = "";
     };
-}); //end studentDataService
-
+}) //end studentDataService
+    .factory("validationService", function(){
+        var validator = {};
+        validator.lettersOnly = function(string){
+            //if string contains any numbers or unwanted characters return error
+            if(string.search(/([^A-z -])/) >= 0){
+                //any string that contains characters other than letters & spaces
+                return false;
+            }else if(string.length < 3){
+                //any string with less than three characters
+                return false;
+            }
+            return true;
+        };
+        validator.lettersAndNumbersOnly = function(string){
+            //if string contains any special characters return error
+            if(string.search(/([^\w\s])/) >= 0){
+                return false;
+            }else if(string.length < 3){
+                //any string with less than three characters
+                return false;
+            }
+            return true;
+        };
+        validator.numBetween = function(num, minNum, maxNum){
+            //make sure num is a number
+            if(typeof(num) != "number"){
+                num = parseFloat(num);
+            }
+            //if num is outside of minNum & maxNum range return error
+            if(num < minNum || num > maxNum){
+                return false;
+            }
+            return true;
+        };
+        return validator;
+    });
 
