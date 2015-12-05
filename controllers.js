@@ -86,4 +86,6 @@ sgtApp.controller("appController", function (studentDataService) {
     };
     //FILTERING
     this.filterText = {};
+    this.filterField = "$";
+    this.filterFieldDisplay = "";
 });

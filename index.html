@@ -123,16 +123,49 @@
                 <!-- Filter data shown -->
                 <div class="form-group">
                     <div class="input-group">
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-filter"></span>
-                            <!-- Display the group/column the table will filter within -->
-                            <span id="filterGroup"></span>
-                        </span>
-                        <input type="text" class="form-control" placeholder="Filter by Course"
-                                ng-model="sl.filterText.course">
-                        <span ng-show="sl.filterText.course !== undefined && sl.filterText.course != '';"
-                                class="input-group-btn">
-                            <button class="btn btn-default" type="button" ng-click="sl.filterText = {};">
+                        <!-- Filter Dropdown Category Selector -->
+                        <div class="input-group-btn dropdown">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-filter"></span>
+                                <span ng-show="sl.filterFieldDisplay != '';">{{sl.filterFieldDisplay}}</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">
+                                    Filter by Column
+                                </li>
+                                <li>
+                                    <a href=""
+                                            ng-click="sl.filterField = 'name'; sl.filterFieldDisplay = 'Student Name';">
+                                        Name
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href=""
+                                            ng-click="sl.filterField = 'course'; sl.filterFieldDisplay = 'Student Course';">
+                                        Course
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href=""
+                                            ng-click="sl.filterField = 'grade'; sl.filterFieldDisplay = 'Student Grade';">
+                                        Grade
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="" ng-click="sl.filterField = '$'; sl.filterFieldDisplay = '';">
+                                        All Columns
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Filter Input -->
+                        <input type="text" class="form-control" placeholder="Filter..."
+                                ng-model="sl.filterText[sl.filterField]">
+                        <!-- Clear Filter Button -->
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button"
+                                    ng-click="sl.filterText = {}; sl.filterField = '$'; sl.filterFieldDisplay = '';">
                                 Clear Filter
                             </button>
                         </span>
