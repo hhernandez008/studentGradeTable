@@ -54,3 +54,9 @@ a:hover, a:focus{
     color: #204d74;
     background: #eee;
 }
+.minHighlight{
+    background: #ffd9b3;
+}
+.maxHighlight{
+    background: #b3ffb3;
+}

@@ -43,6 +43,9 @@
                 </h3>
             </div>
         </div>
+        <!-- find the minimum/lowest & maximum/highest grade -->
+        <div ng-hide="true" ng-bind="ac.gradeMin()"></div>
+        <div ng-hide="true" ng-bind="ac.gradeMax();"></div>
         <div class="row">
             <!-- Add Student Data Form -->
             <!-- Full on mobile, align right on desktop -->
@@ -232,8 +235,12 @@
                             </td>
                         </tr>
                         <tr
-                                ng-repeat="student in sl.studentData() | filter: sl.filterText | orderBy: sl.sortField: sl.reverseSort">
-                            <td>{{student.name}}</td>
+                                ng-repeat="student in sl.studentData() | filter: sl.filterText | orderBy: sl.sortField: sl.reverseSort"
+                                ng-class="{'minHighlight':student.grade == ac.minGrade, 'maxHighlight':student.grade == ac.maxGrade}"
+                                >
+                            <td
+
+                                    >{{student.name}}</td>
                             <td>{{student.course}}</td>
                             <td>{{student.grade}}</td>
                             <td>

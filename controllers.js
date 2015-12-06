@@ -21,6 +21,32 @@ sgtApp.controller("appController", function (studentDataService) {
         }
         return Math.round(gradeSum / numGrades);
     };
+
+    //FIND MIN & MAX GRADES
+    this.minGrade = null;
+    this.maxGrade = null;
+    this.gradeMin = function(){
+        var array = studentDataService.studentArray;
+        for(var i = 0; i < array.length; i++){
+            if(i == 0){
+                this.minGrade = array[i].grade;
+            }else if(array[i].grade < this.minGrade){
+                this.minGrade = array[i].grade;
+            }
+        }
+        return this.minGrade;
+    };
+    this.gradeMax = function(){
+        var array = studentDataService.studentArray;
+        for(var i = 0; i < array.length; i++) {
+            if (i == 0){
+                this.maxGrade = array[i].grade;
+            } else if(array[i].grade > this.maxGrade) {
+                this.maxGrade = array[i].grade;
+            }
+        }
+            return this.maxGrade;
+    };
 }).controller("formController", function (studentDataService, validationService) {
     this.newStudent = {
         name: "",
