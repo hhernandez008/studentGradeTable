@@ -167,7 +167,9 @@
                                 ng-model="sl.filterText[sl.filterField]">
                         <!-- Clear Filter Button -->
                         <span class="input-group-btn">
-                            <button class="btn btn-default" type="button"
+                            <button class="btn" type="button"
+                                    ng-class="{'btn-default':(sl.filterText[sl.filterField].length == 0 || sl.filterText[sl.filterField] == undefined),
+                                    'btn-primary':(sl.filterText[sl.filterField].length > 0)}"
                                     ng-click="sl.filterText = {}; sl.filterField = '$'; sl.filterFieldDisplay = '';">
                                 Clear Filter
                             </button>
@@ -238,9 +240,7 @@
                                 ng-repeat="student in sl.studentData() | filter: sl.filterText | orderBy: sl.sortField: sl.reverseSort"
                                 ng-class="{'minHighlight':student.grade == ac.minGrade, 'maxHighlight':student.grade == ac.maxGrade}"
                                 >
-                            <td
-
-                                    >{{student.name}}</td>
+                            <td>{{student.name}}</td>
                             <td>{{student.course}}</td>
                             <td>{{student.grade}}</td>
                             <td>
