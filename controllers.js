@@ -31,7 +31,6 @@ sgtApp.controller("appController", function (studentDataManipulation, studentDat
         if(!fCtrl.nameError && !fCtrl.courseError && !fCtrl.gradeError){
             //all inputs validate to true
             studentDataManipulation.resetErrors();
-            studentDataManipulation.studentAddCall(fCtrl.newStudent);
             //reset newStudent
             fCtrl.newStudent = {
                 name: "",
@@ -59,9 +58,9 @@ sgtApp.controller("appController", function (studentDataManipulation, studentDat
     //DELETING STUDENTS
     slCtrl.deleteError = studentDataManipulation.deletingError;
     slCtrl.errorMessage = studentDataManipulation.deletingErrorMessage;
-    slCtrl.deleteStudent = function (obj) {
+    slCtrl.deleteStudent = function (id) {
         studentDataManipulation.resetErrors();
-        studentDataManipulation.studentDeleteCall(obj);
+        studentDataManipulation.studentDeleteCall(id);
     };
     //SORTING COLUMNS
     slCtrl.sortField = "";

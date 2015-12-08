@@ -7,7 +7,7 @@ sgtApp.config(['$httpProvider', function ($httpProvider) {
 
 sgtApp.factory("studentDataRetrieval", function($log, $firebaseArray){
     var sdr = {};
-    var firebaseRef = new Firebase("https://intense-heat-9650.firebaseio.com/data");
+    var firebaseRef = new Firebase("https://intense-heat-9651.firebaseio.com/data");
     //Collect student data retrieved from database
     sdr.studentArray = $firebaseArray(firebaseRef);
     sdr.loaded;
@@ -26,7 +26,7 @@ sgtApp.factory("studentDataRetrieval", function($log, $firebaseArray){
             sdr.loaded = false;
         });
     return sdr;
-}).service("studentDataManipulation", function (studentDataRetrieval, $log) {
+}).service("studentDataManipulation", function (studentDataRetrieval, $firebase, $log) {
     var sdm = this;
     var studentList = studentDataRetrieval.studentArray;
 
@@ -81,8 +81,9 @@ sgtApp.factory("studentDataRetrieval", function($log, $firebaseArray){
      * On success delete the student form the student array.
      * @param obj
      */
-    sdm.studentDeleteCall = function (obj) {
-        studentList.$remove(obj)
+    sdm.studentDeleteCall = function (id) {
+        var key = studentList.$indexFor(id);
+        studentDataRetrieval.studentArray.$remove(key)
             .then(function (ref) {
                 //success
             }, function () {
