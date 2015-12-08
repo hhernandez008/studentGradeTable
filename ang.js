@@ -1,162 +1,148 @@
-var sgtApp = angular.module("sgtApp", []);
+var sgtApp = angular.module("sgtApp", ["firebase"]);
 
 sgtApp.config(['$httpProvider', function ($httpProvider) {
     //Set headers content-type to x-www-form-urlencoded
     $httpProvider.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
 }]);
 
-sgtApp.service("studentDataService", function ($http, $log) {
-    var student = this;
-    var apiKey = "JhpapQQx34";
+sgtApp.factory("studentDataRetrieval", function($log, $firebaseArray){
+    var sdr = {};
+    var firebaseRef = new Firebase("https://intense-heat-9650.firebaseio.com/data");
     //Collect student data retrieved from database
-    student.studentArray = [];
-    /**
-     * Take the passed in obj and convert it to a parameter string for use in url/param string creation.
-     * @param obj
-     * @returns {*}
-     */
-    student.dataObjToString = function (obj) {
-        obj = $.param(obj);
-        return obj;
-    };
+    sdr.studentArray = $firebaseArray(firebaseRef);
+    sdr.loaded;
+    //Reverse display of the array
+    sdr.studentArray.$loaded()
+        .then(function(x){
+            if(x === sdr.studentArray) {
+                sdr.loaded = true;
+            }else{
+                $log.error("Error: Unable to load student data");
+                sdr.loaded = false;
+            }
+        })
+        .catch(function(error){
+            $log.error("Error:", error);
+            sdr.loaded = false;
+        });
+    return sdr;
+}).service("studentDataManipulation", function (studentDataRetrieval, $log) {
+    var sdm = this;
+    var studentList = studentDataRetrieval.studentArray;
 
     /**
      * LOADING STUDENT DATA
      */
-
-    student.loadError = false;
-    /**
-     * initial load and reload of student data
-     * @returns {*}
-     */
-    student.studentDataCall = function () {
-        $http({
-            data: "api_key=" + apiKey,
-            method: "post",
-            url: "http://s-apis.learningfuze.com/sgt/get"
-        }).then(function (result) {
-            if (result.data.success) {
-                //save student data in reversed order
-                student.studentArray = result.data.data.reverse();
-            } else {
-                student.loadError = true;
-                $log.error(result.data.error[0]);
+    //return the student array in reverse order so latest entries appear on top
+    sdm.loadingResults = function () {
+        if(studentDataRetrieval.loaded) {
+            var reverseArray = [];
+            for(var i = studentList.length - 1; i >= 0; i--){
+                reverseArray.push(studentList[i]);
             }
-        }, function () {
-            $log.error("Unsuccessful call to http://s-apis.learingfuze.com/sgt/get");
-            student.loadError = true;
-        });
-    };
-    //return the student array
-    student.loadingResults = function () {
-        return student.studentArray;
+            return reverseArray;
+        }
     };
     //return a load error indication
-    student.loadingError = function () {
-        return student.loadError;
+    sdm.loadingError = function () {
+        return studentDataRetrieval.loaded;
     };
 
     /**
      * ADDING STUDENTS
      */
-
-    student.addError = false;
+    sdm.addError = false;
     /**
      * Send the newly created student object to the database & on success add the student and
      * the returned id to the student array
      * @param obj
      */
-    student.studentAddCall = function (obj) {
-        var object = obj;
-        var data = "api_key=" + apiKey + "&" + student.dataObjToString(obj);
-        $http({
-            data: data,
-            method: "post",
-            url: "http://s-apis.learningfuze.com/sgt/create"
-        }).then(function (result) {
-            if (result.data.success) {
-                object.id = result.data.new_id;
-                //add student to the start of the array
-                student.studentArray.unshift(object);
-                //return empty object to clear the object passed in
-                object = {};
-                return object;
-            } else {
-                student.addError = true;
-                $log.error(result.data.errors[0]);
-                return object;
-            }
-        }, function () {
-            $log.error("Unsuccessful call to http://s-apis.learningfuze.com/sgt/create");
-            student.addError = true;
-            return object;
-        });
+    sdm.studentAddCall = function (obj) {
+        studentList.$add(obj)
+            .then(function (ref) {
+                //success
+            }, function () {
+                sdm.addError = true;
+                $log.error("Unable to add student");
+            });
     };
     //return add student error indicator
-    student.addingError = function () {
-        return student.addError;
+    sdm.addingError = function () {
+        return sdm.addError;
     };
 
     /**
      * DELETING STUDENTS
      */
 
-    student.delteError = false;
-    student.deleteErrorMessage = "";
+    sdm.delteError = false;
     /**
-     * Send the id of the student to delete to the database.
+     * Send the the student to delete to the database.
      * On success delete the student form the student array.
-     * @param studentId
-     * @param index
+     * @param obj
      */
-    student.studentDeleteCall = function (studentId) {
-        var data = "api_key=" + apiKey + "&student_id=" + studentId;
-        $http({
-            data: data,
-            method: "post",
-            url: "http://s-apis.learningfuze.com/sgt/delete"
-        }).then(function (result) {
-            if (result.data.success) {
-                //search studentArray for the matching id
-                var i = 0;
-                while(i < student.studentArray.length){
-                    if(student.studentArray[i].id === studentId){
-                        student.studentArray.splice(i, 1);
-                        return;
-                    }
-                    i++;
-                }
-
-            } else {
-                student.deleteError = true;
-                student.deleteErrorMessage = "You are not authorized to delete this student";
-                $log.error(result.data.errors[0]);
-            }
-        }, function () {
-            student.deleteError = false;
-            student.deleteErrorMessage = "Unable to delete student at this time. Please try again.";
-            $log.error("Unsuccessful call to http://s-apis.learninfuze.com/sgt/create");
-        });
+    sdm.studentDeleteCall = function (obj) {
+        studentList.$remove(obj)
+            .then(function (ref) {
+                //success
+            }, function () {
+                sdm.deleteError = true;
+                $log.error("Unable to delete student");
+            });
     };
     //return delete student error indicators
-    student.deletingError = function () {
-        return student.deleteError;
+    sdm.deletingError = function () {
+        return sdm.deleteError;
     };
     //return delete student error message
-    student.deletingErrorMessage = function(){
-        return student.deleteErrorMessage;
+    sdm.deletingErrorMessage = function () {
+        return "Unable to delete this student.";
     };
 
     /**
      * Reset all errors to original value
      */
-    student.resetErrors = function () {
-        student.loadError = false;
-        student.addError = false;
-        student.deleteError = false;
-        student.deleteErrorMessage = "";
+    sdm.resetErrors = function () {
+        sdm.loadError = false;
+        sdm.addError = false;
+        sdm.deleteError = false;
+        sdm.deleteErrorMessage = "";
     };
-}) //end studentDataService
+}) //end studentDataManipulation
+    .service("studentDataInformation", function(studentDataRetrieval){
+        var studentList = studentDataRetrieval.studentArray;
+        //calculate average
+        this.calculateAverageGrade = function () {
+            var gradeSum = 0;
+            var numGrades = 0;
+            for (var i = 0; i < studentList.length; i++) {
+                gradeSum += studentList[i].grade;
+                numGrades++;
+            }
+            return Math.round(gradeSum / numGrades);
+        };
+
+        //FIND HIGHEST & LOWEST VALUES
+        this.highLowValues = function(property){
+            var values = {};
+            for(var i = 0; i < studentList.length; i++){
+                if(i == 0){
+                    values.low = studentList[i][property];
+                }else if(studentList[i][property] < values.low){
+                    values.low = studentList[i][property];
+                }
+            }
+            for(var j = 0; j < studentList.length; j++) {
+                if (j == 0){
+                    values.high = studentList[j][property];
+                } else if(studentList[j][property] > values.high) {
+                    values.high = studentList[j][property];
+                }
+            }
+            return values;
+        };
+
+    })
     .service("validationService", function(){
         //if there is an incorrect match return true, else param passes & return false
         /**
